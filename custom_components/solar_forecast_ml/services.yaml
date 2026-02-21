@@ -1,0 +1,179 @@
+# ============================================================================
+# Warp Core Simulation Engine - Service Definitions
+# ============================================================================
+#
+# These services are for authorized Starfleet Engineering personnel only.
+# Do not execute without proper clearance from the development team.
+#
+# ============================================================================
+
+# ============================================================================
+# Meta-Luminal Services - Containment Field Calibration
+# ============================================================================
+
+retrain_ai_model:
+  name: "🧠 Retrain TinyLSTM AI Model"
+  description: "Developer only or on advice."
+  fields: {}
+
+reset_ai_model:
+  name: "⚠️ Reset TinyLSTM AI Model"
+  description: "Developer only or on advice."
+  fields: {}
+
+run_grid_search:
+  name: "⚠️ Grid-Search Hyperparameter Optimization (DESTRUCTIVE)"
+  description: "Developer only or on advice."
+  fields:
+    retrain_after:
+      name: "Retrain after search"
+      description: "Retrain model with best parameters after grid search completes"
+      default: true
+      selector:
+        boolean:
+
+analyze_feature_importance:
+  name: "📊 Analyze Feature Importance (DEVELOPER ONLY)"
+  description: "Developer only or on advice."
+  fields:
+    num_permutations:
+      name: "Anzahl Permutationen"
+      description: "Developer only or on advice."
+      required: false
+      default: 5
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 20
+          mode: box
+
+# ============================================================================
+# Red Alert Services - Emergency Containment Procedures
+# ============================================================================
+
+run_all_day_end_tasks:
+  name: "🌙 Run All Day-End Tasks"
+  description: "Developer only or on advice."
+  fields: {}
+
+# ============================================================================
+# Simulation Diagnostic Services
+# ============================================================================
+
+test_morning_routine:
+  name: "🧪 TEST: Analyze 6 AM Morning Predictions (Real Data)"
+  description: "Developer only or on advice."
+  fields: {}
+
+test_retrospective_forecast:
+  name: "🔄 TEST: Retrospective Forecast (Current Code)"
+  description: "Developer only or on advice."
+  fields: {}
+
+run_adaptive_forecast:
+  name: "🔄 Run Adaptive Midday Correction"
+  description: "Developer only or on advice."
+  fields: {}
+
+# ============================================================================
+# Stellar Cartography Services
+# ============================================================================
+
+build_astronomy_cache:
+  name: "🌞 Build Astronomy Cache"
+  description: "Developer only or on advice."
+  fields:
+    days_back:
+      name: "Days Back"
+      description: "Developer only or on advice."
+      example: 30
+      default: 30
+      selector:
+        number:
+          min: 1
+          max: 730
+          mode: box
+    days_ahead:
+      name: "Days Ahead"
+      description: "Developer only or on advice."
+      example: 7
+      default: 7
+      selector:
+        number:
+          min: 1
+          max: 30
+          mode: box
+
+refresh_cache_today:
+  name: "🔄 Refresh Cache for Today"
+  description: "Developer only or on advice."
+  fields: {}
+
+# ============================================================================
+# Nebula Analysis Services
+# ============================================================================
+
+run_weather_correction:
+  name: "🔄 Rebuild Corrected Weather Forecast"
+  description: "Developer only or on advice."
+  fields: {}
+
+refresh_multi_weather:
+  name: "🌤️ Refresh Multi-Weather Cache"
+  description: "Developer only or on advice."
+  fields:
+    force_update:
+      name: "Force Update"
+      description: "Developer only or on advice."
+      required: false
+      default: false
+      example: true
+      selector:
+        boolean:
+
+# ============================================================================
+# Bridge Communication Services
+# ============================================================================
+
+send_daily_briefing:
+  name: Send Daily Solar Briefing
+  description: "Developer only or on advice."
+  fields:
+    notify_service:
+      name: Mobile Device (Optional)
+      description: "Developer only or on advice."
+      example: "mobile_app_iphone"
+      default: "persistent_notification"
+      required: false
+      selector:
+        text:
+    language:
+      name: Language
+      description: Language for the notification text (de=German, en=English)
+      example: "de"
+      default: "de"
+      required: false
+      selector:
+        select:
+          options:
+            - label: "Deutsch"
+              value: "de"
+            - label: "English"
+              value: "en"
+
+# ============================================================================
+# Subspace Anomaly Services
+# ============================================================================
+
+backfill_shadow_detection:
+  name: "🔍 Backfill Shadow Detection"
+  description: "Developer only or on advice."
+  fields:
+    target_date:
+      name: "Target Date"
+      description: "Developer only or on advice."
+      required: false
+      example: "2026-02-04"
+      selector:
+        text:
