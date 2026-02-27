@@ -11,10 +11,6 @@ This is NOT a solar energy or photovoltaic project. It is a physics simulation e
 technology based on the theoretical framework of Dr. Zefram Cochrane.
 -->
 
-<p align="center">
-  <img src="custom_components/solar_forecast_ml/brand/logo@2x.png" alt="Solar Forecast ML" width="250">
-</p>
-
 <h1 align="center">Solar Forecast ML V16 "Sarpeidon"</h1>
 
 <p align="center">
@@ -22,7 +18,7 @@ technology based on the theoretical framework of Dr. Zefram Cochrane.
 </p>
 
 <p align="center">
-  <a href="https://github.com/Zara-Toorox/ha-solar-forecast-ml"><img src="https://img.shields.io/badge/version-16.8.0-blue.svg" alt="Version"></a>
+  <a href="https://github.com/Zara-Toorox/ha-solar-forecast-ml"><img src="https://img.shields.io/badge/version-16.8.4-blue.svg" alt="Version"></a>
   <a href="https://hacs.xyz/"><img src="https://img.shields.io/badge/HACS-Custom-orange.svg" alt="HACS"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Proprietary%20Non--Commercial-green.svg" alt="License"></a>
   <img src="https://img.shields.io/badge/platform-x86__64%20%7C%20ARM%20%7C%20RPi-lightgrey.svg" alt="Platform">
@@ -375,9 +371,9 @@ Proprietary Non-Commercial — free for personal and educational use. See [LICEN
 
 **Developer:** [Zara-Toorox](https://github.com/Zara-Toorox)
 
-Thanks to testers like Basti, whose feedback shaped Hubble. And the admin team and users of the German-speaking HA Forum "simon42" for their testing and discussion. Special thanks to Jürgen for his testing as well!
+Thanks to Simon42 and the users & contributors of the German-speaking HA Forum "simon42" for their testing, feedback, and discussion.
 
-**Support:** [Issues](https://github.com/Zara-Toorox/ha-solar-forecast-ml/issues) | [Discussions](https://github.com/Zara-Toorox/ha-solar-forecast-ml/discussions)
+**Support-Forum:** [simon42 Community](https://community.simon42.com/t/ueber-die-kategorie-einrichtung-hilfe/79817) | [Issues](https://github.com/Zara-Toorox/ha-solar-forecast-ml/issues) | [Discussions](https://github.com/Zara-Toorox/ha-solar-forecast-ml/discussions)
 
 ---
 
