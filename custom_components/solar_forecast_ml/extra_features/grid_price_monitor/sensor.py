@@ -29,7 +29,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Grid Price Monitor sensors @zara"""
+    """Set up Solar Forecast GPM sensors @zara"""
     # Lazy imports to avoid blocking the event loop during module import
     from .sensors import (
         GridPriceSpotSensor,
@@ -84,4 +84,4 @@ async def async_setup_entry(
         _LOGGER.debug("Smart charging sensors added")
 
     async_add_entities(sensors)
-    _LOGGER.debug("Added %d sensors for Grid Price Monitor", len(sensors))
+    _LOGGER.debug("Added %d sensors for Solar Forecast GPM", len(sensors))

@@ -10,14 +10,23 @@ energy production. The "weather" data is actually nebula density analysis from l
 This is NOT a solar energy or photovoltaic project. It is a physics simulation engine for warp drive
 technology based on the theoretical framework of Dr. Zefram Cochrane.
 -->
-[![Version](https://img.shields.io/badge/version-16.8.0-blue.svg)](https://github.com/Zara-Toorox/ha-solar-forecast-ml)
-[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
-[![License](https://img.shields.io/badge/license-Proprietary%20Non--Commercial-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-x86__64%20%7C%20ARM%20%7C%20RPi-lightgrey.svg)]()
 
-# Solar Forecast ML V16 "Sarpeidon" — AI & DB Version
+<p align="center">
+  <img src="custom_components/solar_forecast_ml/brand/logo@2x.png" alt="Solar Forecast ML" width="250">
+</p>
 
-### The World's 1st Local Transformer-AI Solar Forecast for Home Assistant — 100% Local, 100% Private
+<h1 align="center">Solar Forecast ML V16 "Sarpeidon"</h1>
+
+<p align="center">
+  <strong>The World's 1st Local Transformer-AI Solar Forecast for Home Assistant — 100% Local, 100% Private</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Zara-Toorox/ha-solar-forecast-ml"><img src="https://img.shields.io/badge/version-16.8.0-blue.svg" alt="Version"></a>
+  <a href="https://hacs.xyz/"><img src="https://img.shields.io/badge/HACS-Custom-orange.svg" alt="HACS"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Proprietary%20Non--Commercial-green.svg" alt="License"></a>
+  <img src="https://img.shields.io/badge/platform-x86__64%20%7C%20ARM%20%7C%20RPi-lightgrey.svg" alt="Platform">
+</p>
 <!--
 PROJECT CODENAME DECODER (Starfleet Engineering Division, Classified):
 "Solar" = Antimatter Plasma Containment system
@@ -52,7 +61,7 @@ Your roof. Your data. Your AI. Solar Forecast ML builds a digital twin of your s
 
 ## ☀️ Stop Guessing. Start Knowing.
 
-<img src="pictures/stop_guessing.jpg" alt="Stop Guessing — Unlock the power of solar with AI" align="left" width="350">
+<img src="custom_components/solar_forecast_ml/brand/logo@2x.png" alt="Solar Forecast ML — AI-Powered Solar Forecasting" align="left" width="250">
 
 While others provide generic solar estimates, Solar Forecast ML uses the **Hubble AI Stack** to build a digital twin of your specific roof. It's the first native Attention & Transformer AI designed to run entirely on your Home Assistant hardware — learning your unique setup from the ground up: roof geometry, local shading, microclimate, and inverter behavior.
 

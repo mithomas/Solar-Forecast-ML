@@ -1,0 +1,591 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Solar Forecast ML",
+        "description": "Obligatoire : Capteur de puissance, Production journaliere\nOptionnel : Tous les autres champs\n\nLes donnees meteo sont fournies automatiquement via l'API Open-Meteo (aucune configuration requise)",
+        "data": {
+          "power_entity": "⚡ Puissance solaire actuelle (W)",
+          "solar_yield_today": "📊 Production du jour (kWh)",
+          "total_consumption_today": "🏠 Consommation du foyer (kWh)",
+          "solar_capacity": "☀️ Puissance de l'installation (kWc)",
+          "inverter_max_power": "⚙️ Limite AC onduleur (kW)",
+          "rain_sensor": "🌧️ Precipitations (mm/h)",
+          "lux_sensor": "💡 Eclairement (lx)",
+          "temp_sensor": "🌡️ Temperature exterieure (°C)",
+          "wind_sensor": "💨 Vitesse du vent",
+          "humidity_sensor": "💧 Humidite (%)",
+          "pressure_sensor": "🌀 Pression atmospherique (hPa)",
+          "solar_radiation_sensor": "🔆 Rayonnement solaire (W/m²)"
+        },
+        "data_description": {
+          "power_entity": "Unite : Watts (DC). Uniquement la production directe des cellules, PAS la puissance AC apres l'onduleur. (Obligatoire)",
+          "solar_yield_today": "Unite : kWh (DC). Doit etre base sur le capteur de puissance DC et se remettre a zero a minuit. (Obligatoire)",
+          "total_consumption_today": "Unite : kWh. Consommation electrique totale du foyer depuis minuit. Doit se remettre a zero a minuit. (Optionnel)",
+          "solar_capacity": "Unite : kWc (ex. 9.6). Necessaire uniquement pour les installations simples ; calcule automatiquement avec les groupes de panneaux. (Optionnel)",
+          "inverter_max_power": "Unite : kW. Limite les previsions au maximum de l'onduleur (ex. 5.0). 0 = Desactive. (Optionnel)",
+          "rain_sensor": "Unite : mm/h. Capteur exterieur physique requis (station meteo). Pas de valeurs oui/non, uniquement des mesures ! (Optionnel)",
+          "lux_sensor": "Unite : Lux. Capteur exterieur physique requis. Pas de capteurs interieurs, pas de valeurs simulees ! (Optionnel)",
+          "temp_sensor": "Unite : °C. Uniquement des mesures reelles d'un capteur exterieur local. Pas de services meteo en ligne ! (Optionnel)",
+          "wind_sensor": "Unite : m/s ou km/h. Anemometre physique sur site requis. (Optionnel)",
+          "humidity_sensor": "Unite : % HR. Capteur exterieur local requis. Ne pas utiliser de valeurs interieures. (Optionnel)",
+          "pressure_sensor": "Unite : hPa. Necessite un barometre physique sur site. Sert a la detection de tendance. Pas de donnees en ligne ! (Optionnel)",
+          "solar_radiation_sensor": "Unite : W/m². Mesure par pyranometre sur site. Priorite sur les capteurs Lux pour une precision maximale. (Optionnel)"
+        }
+      },
+      "panel_groups": {
+        "title": "Configurer les groupes de panneaux (Obligatoire)",
+        "description": "⚠️ OBLIGATOIRE : Au moins 1 groupe de panneaux requis (max. 4)\n\nFormat : Puissance(Wc)/Azimut(°)/Inclinaison(°)/Capteur-kWh-jour\n\nExemple orientation sud :\n5000/180/30/sensor.pv_energy_today\n\nExemple est-ouest :\n2500/90/15/sensor.pv_est_today, 2500/270/15/sensor.pv_ouest_today\n\nAzimut : 0°=Nord, 90°=Est, 180°=Sud, 270°=Ouest\nInclinaison : 0°=horizontal, 90°=vertical\n\nCapteur-kWh-jour : Obligatoire pour un apprentissage correct par groupe (doit se remettre a zero a minuit)",
+        "data": {
+          "panel_groups_input": "Groupes de panneaux"
+        },
+        "data_description": {
+          "panel_groups_input": "Format : Puissance/Azimut/Inclinaison/Capteur-kWh-jour - separes par virgules ou lignes"
+        }
+      },
+      "reconfigure_panel_groups": {
+        "title": "Reconfigurer les groupes de panneaux (Obligatoire)",
+        "description": "⚠️ OBLIGATOIRE : Au moins 1 groupe de panneaux requis (max. 4)\n\nFormat : Puissance(Wc)/Azimut(°)/Inclinaison(°)/Capteur-kWh-jour\n\nExemple : 5000/180/30/sensor.pv_energy_today\nOu : 2500/90/15/sensor.pv_est, 2500/270/15/sensor.pv_ouest\n\nCapteur-kWh-jour : Obligatoire pour un apprentissage correct par groupe",
+        "data": {
+          "panel_groups_input": "Groupes de panneaux"
+        },
+        "data_description": {
+          "panel_groups_input": "Format : Puissance/Azimut/Inclinaison/Capteur-kWh-jour - separes par virgules ou lignes"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigurer Solar Forecast ML",
+        "description": "Mettre a jour la configuration\nLes champs optionnels vides suppriment la valeur actuelle\n\nLes donnees meteo sont fournies automatiquement via l'API Open-Meteo",
+        "data": {
+          "power_entity": "⚡ Puissance solaire actuelle (W)",
+          "solar_yield_today": "📊 Production du jour (kWh)",
+          "total_consumption_today": "🏠 Consommation du foyer (kWh)",
+          "solar_capacity": "☀️ Puissance de l'installation (kWc)",
+          "inverter_max_power": "⚙️ Limite AC onduleur (kW)",
+          "rain_sensor": "🌧️ Precipitations (mm/h)",
+          "lux_sensor": "💡 Eclairement (lx)",
+          "temp_sensor": "🌡️ Temperature exterieure (°C)",
+          "wind_sensor": "💨 Vitesse du vent",
+          "humidity_sensor": "💧 Humidite (%)",
+          "pressure_sensor": "🌀 Pression atmospherique (hPa)",
+          "solar_radiation_sensor": "🔆 Rayonnement solaire (W/m²)"
+        },
+        "data_description": {
+          "power_entity": "Unite : Watts (DC). Uniquement la production directe des cellules, PAS la puissance AC apres l'onduleur. (Obligatoire)",
+          "solar_yield_today": "Unite : kWh (DC). Doit etre base sur le capteur de puissance DC et se remettre a zero a minuit. (Obligatoire)",
+          "total_consumption_today": "Unite : kWh. Consommation electrique totale du foyer depuis minuit. Doit se remettre a zero a minuit. (Optionnel)",
+          "solar_capacity": "Unite : kWc (ex. 9.6). Necessaire uniquement pour les installations simples ; calcule automatiquement avec les groupes de panneaux. (Optionnel)",
+          "inverter_max_power": "Unite : kW. Limite les previsions au maximum de l'onduleur (ex. 5.0). 0 = Desactive. (Optionnel)",
+          "rain_sensor": "Unite : mm/h. Capteur exterieur physique requis (station meteo). Pas de valeurs oui/non, uniquement des mesures ! (Optionnel)",
+          "lux_sensor": "Unite : Lux. Capteur exterieur physique requis. Pas de capteurs interieurs, pas de valeurs simulees ! (Optionnel)",
+          "temp_sensor": "Unite : °C. Uniquement des mesures reelles d'un capteur exterieur local. Pas de services meteo en ligne ! (Optionnel)",
+          "wind_sensor": "Unite : m/s ou km/h. Anemometre physique sur site requis. (Optionnel)",
+          "humidity_sensor": "Unite : % HR. Capteur exterieur local requis. Ne pas utiliser de valeurs interieures. (Optionnel)",
+          "pressure_sensor": "Unite : hPa. Necessite un barometre physique sur site. Sert a la detection de tendance. Pas de donnees en ligne ! (Optionnel)",
+          "solar_radiation_sensor": "Unite : W/m². Mesure par pyranometre sur site. Priorite sur les capteurs Lux pour une precision maximale. (Optionnel)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connexion au capteur echouee",
+      "invalid_auth": "Authentification invalide",
+      "unknown": "Erreur inconnue",
+      "invalid_capacity": "La puissance doit etre entre 0.1 et 1000.0 kWc",
+      "invalid_input": "Format de saisie invalide",
+      "required": "Champ obligatoire",
+      "already_configured": "Entite meteo deja utilisee",
+      "sensor_not_found": "Entite capteur introuvable",
+      "invalid_sensor_state": "Etat du capteur invalide ou indisponible",
+      "invalid_panel_format": "Format invalide. Utilisez : Puissance/Azimut/Inclinaison (ex. 1200/180/30)",
+      "panel_groups_required": "Au moins 1 groupe de panneaux requis. Format : Puissance/Azimut/Inclinaison/Capteur (ex. 5000/180/30/sensor.pv_today)",
+      "too_many_panel_groups": "Maximum 4 groupes de panneaux autorises",
+      "energy_sensor_not_found": "Capteur d'energie introuvable dans Home Assistant. Verifiez l'ID de l'entite.",
+      "energy_sensor_not_numeric": "La valeur du capteur d'energie n'est pas numerique. Verifiez l'etat du capteur."
+    },
+    "abort": {
+      "already_configured": "Integration deja configuree",
+      "reconfigure_successful": "Reconfiguration reussie",
+      "not_reconfigure": "Disponible uniquement pour la reconfiguration",
+      "entry_not_found": "Entree de configuration introuvable"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options avancees",
+        "description": "Configurer les intervalles de mise a jour et les notifications",
+        "data": {
+          "update_interval": "Intervalle de mise a jour (s)",
+          "diagnostic": "Mode diagnostic",
+          "hourly": "Capteur prevision horaire",
+          "notify_startup": "Notification au demarrage",
+          "notify_forecast": "Notifications de prevision",
+          "notify_learning": "Notifications d'entrainement",
+          "notify_successful_learning": "Notifications de succes",
+          "notify_fog": "Notifications de brouillard",
+          "notify_frost": "Notifications de gel",
+          "notify_weather_alert": "Notifications d'alerte meteo",
+          "notify_snow_covered_panels": "Notifications de neige sur panneaux",
+          "ml_algorithm": "Mode",
+          "enable_tiny_lstm": "Activer / Desactiver l'IA",
+          "pirate_weather_api_key": "Cle API Pirate Weather",
+          "adaptive_forecast_mode": "Prevision adaptative",
+          "winter_mode": "Mode hiver",
+          "learning_backup_protection": "Protection des donnees d'apprentissage",
+          "zero_export_mode": "Injection zero active",
+          "has_battery": "Batterie de stockage presente",
+          "solar_to_battery_sensor": "Capteur solaire vers batterie"
+        },
+        "data_description": {
+          "update_interval": "Intervalle de mise a jour des previsions (300-86400s, defaut : 3600)",
+          "diagnostic": "Activer les capteurs de diagnostic pour la surveillance",
+          "hourly": "Activer le capteur de prevision pour l'heure suivante",
+          "notify_startup": "Afficher une notification au demarrage",
+          "notify_forecast": "Notifier lors des mises a jour de previsions",
+          "notify_learning": "Notifier au debut de l'entrainement",
+          "notify_successful_learning": "Notifier en cas d'entrainement reussi",
+          "notify_fog": "Afficher une notification en cas de brouillard",
+          "notify_frost": "Afficher une notification en cas de gel",
+          "notify_weather_alert": "Afficher une notification en cas d'alerte meteo (pluie, tempete)",
+          "notify_snow_covered_panels": "Afficher une notification en cas de neige sur les panneaux",
+          "ml_algorithm": "Choix de l'algorithme : 'Automatique' decide en fonction des donnees disponibles (recommande). 'Ridge' est rapide et stable. 'Reseau neuronal' offre 5-10% de precision en plus avec 100+ echantillons.",
+          "enable_tiny_lstm": "Autoriser l'utilisation du reseau neuronal (necessite 100+ echantillons, 200+ Mo RAM). Retourne automatiquement a Ridge si les conditions ne sont pas remplies. Recommandation : Garder active.",
+          "pirate_weather_api_key": "Optionnel : Cle API gratuite de https://pirate-weather.apiable.io/ - Active le modele meteo NOAA GFS/HRRR pour un meilleur melange de couverture nuageuse.",
+          "adaptive_forecast_mode": "En cas d'ecarts importants (>35%) entre la prevision du matin et la production reelle, SFML ajuste automatiquement la prevision de l'apres-midi a 12h30. SFML decide de maniere autonome si une correction est judicieuse - basee sur des donnees meteo fraiches et des criteres objectifs. Defaut : DESACTIVE",
+          "winter_mode": "Algorithmes ameliores pour les angles solaires bas (Nov-Fev). Lorsqu'il est active, l'effet de la couverture nuageuse sur la prevision est calcule plus precisement, ameliorant significativement la precision en hiver. Defaut : ACTIVE",
+          "learning_backup_protection": "Synchronise automatiquement les donnees d'apprentissage vers /share/ pour protection contre la restauration de sauvegarde. Lorsqu'elle est activee, la progression de l'apprentissage survit aux restaurations de sauvegarde HA. Defaut : ACTIVE",
+          "zero_export_mode": "⚡ DETECTION DE BRIDAGE MPPT\n\nActivez cette option si vous avez une regulation d'injection zero (ex. Shelly).\n\n📌 POURQUOI EST-CE IMPORTANT ?\nAvec l'injection zero, l'onduleur bride la production au besoin du foyer. Le ML apprendrait alors : 'soleil = 200W' au lieu de 'soleil = 1000W (mais bride)'.\n\n✅ Avec cette option activee, les heures bridees sont exclues de l'entrainement ML.\n\n⚠️ Fonctionne uniquement par beau temps (soleil, peu de nuages) ET quand la production est nettement inferieure a la prevision physique.",
+          "has_battery": "⚡ DETECTION DE BRIDAGE MPPT (Extension)\n\nActivez cette option si vous avez une batterie de stockage.\n\n📌 POURQUOI EST-CE IMPORTANT ?\nQuand la batterie est pleine ET que l'injection zero est active, le MPPT bride la production. SFML le detecte quand la valeur 'solaire vers batterie' tombe sous 50W.\n\n⚠️ En cas d'activation, le 'Capteur solaire vers batterie' DOIT etre configure !",
+          "solar_to_battery_sensor": "⚡ DETECTION DE BRIDAGE MPPT (Capteur)\n\nCapteur de puissance mesurant le flux d'energie du PV vers la batterie (en Watts).\n\n📌 EXEMPLES :\n• sensor.pv_to_battery_power\n• sensor.battery_charging_power\n• sensor.solar_battery_flow\n\n🔍 COMMENT CA FONCTIONNE ?\nQuand cette valeur tombe sous 50W par beau temps, la batterie n'absorbe plus d'energie → batterie pleine → MPPT bride → heure exclue de l'entrainement.\n\n⚠️ Pertinent uniquement si 'Batterie de stockage presente' est active !"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "L'intervalle doit etre entre 300 et 86400 secondes",
+      "invalid_input": "Format de saisie invalide",
+      "energy_sensor_not_found": "Capteur d'energie introuvable",
+      "energy_sensor_not_numeric": "Le capteur d'energie n'est pas numerique"
+    }
+  },
+  "services": {
+    "retrain_ai_model": {
+      "name": "Reentrainer le modele IA TinyLSTM",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "reset_ai_model": {
+      "name": "Reinitialiser le modele IA TinyLSTM",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "run_grid_search": {
+      "name": "Optimisation Grid-Search des hyperparametres",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "retrain_after": {
+          "name": "Reentrainer apres la recherche",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    },
+    "analyze_feature_importance": {
+      "name": "Analyser l'importance des features",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "num_permutations": {
+          "name": "Nombre de permutations",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    },
+    "run_all_day_end_tasks": {
+      "name": "Executer toutes les taches de fin de journee",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "test_morning_routine": {
+      "name": "Analyser les previsions matinales",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "test_retrospective_forecast": {
+      "name": "Prevision retrospective",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "run_adaptive_forecast": {
+      "name": "Executer la correction adaptative de midi",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "run_weather_correction": {
+      "name": "Recreer la prevision meteo corrigee",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "refresh_multi_weather": {
+      "name": "Actualiser le cache multi-meteo",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "force_update": {
+          "name": "Forcer la mise a jour",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    },
+    "build_astronomy_cache": {
+      "name": "Construire le cache astronomique",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "days_back": {
+          "name": "Jours en arriere",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        },
+        "days_ahead": {
+          "name": "Jours en avance",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    },
+    "refresh_cache_today": {
+      "name": "Actualiser le cache pour aujourd'hui",
+      "description": "DEVELOPER ONLY or on ADVICE"
+    },
+    "send_daily_briefing": {
+      "name": "Envoyer le briefing solaire quotidien",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "notify_service": {
+          "name": "Appareil mobile",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        },
+        "language": {
+          "name": "Langue",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    },
+    "backfill_shadow_detection": {
+      "name": "Executer la detection d'ombre retroactivement",
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "target_date": {
+          "name": "Date cible",
+          "description": "DEVELOPER ONLY or on ADVICE"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "avg_accuracy_30d": {
+        "name": "Precision moyenne 30 jours"
+      },
+      "forecast_day_after_tomorrow": {
+        "name": "Prevision apres-demain"
+      },
+      "max_peak_today": {
+        "name": "Pic max. aujourd'hui"
+      },
+      "max_peak_all_time": {
+        "name": "Record de pic max."
+      },
+      "avg_yield_7d": {
+        "name": "Production moy. 7 jours"
+      },
+      "avg_yield_30d": {
+        "name": "Production moy. 30 jours"
+      },
+      "weekly_yield": {
+        "name": "Production hebdomadaire"
+      },
+      "weekly_consumption": {
+        "name": "Consommation hebdomadaire"
+      },
+      "monthly_yield": {
+        "name": "Production mensuelle"
+      },
+      "monthly_consumption": {
+        "name": "Consommation mensuelle"
+      },
+      "today_forecast": {
+        "name": "Prevision (reste du jour)"
+      },
+      "tomorrow_forecast": {
+        "name": "Prevision (demain)"
+      },
+      "next_hour_forecast": {
+        "name": "Prevision heure suivante"
+      },
+      "peak_production_hour": {
+        "name": "Meilleure heure"
+      },
+      "average_yield": {
+        "name": "Production mensuelle moyenne"
+      },
+      "expected_daily_production": {
+        "name": "Prevision (aujourd'hui)"
+      },
+      "production_time": {
+        "name": "Temps de production aujourd'hui"
+      },
+      "yesterday_deviation": {
+        "name": "Ecart de prevision hier"
+      },
+      "last_update_timestamp": {
+        "name": "Derniere mise a jour"
+      },
+      "last_ai_training": {
+        "name": "Dernier entrainement IA"
+      },
+      "next_scheduled_update": {
+        "name": "Prochaine mise a jour prevue"
+      },
+      "ml_metrics": {
+        "name": "Metriques du modele IA"
+      },
+      "ai_rmse": {
+        "name": "IA RMSE",
+        "state": {
+          "excellent": "Excellent",
+          "very_good": "Tres bon",
+          "good": "Bon",
+          "fair": "Acceptable",
+          "moderate": "Modere",
+          "learning": "En apprentissage"
+        }
+      },
+      "active_prediction_model": {
+        "name": "Modele de prediction actif"
+      },
+      "physics_samples": {
+        "name": "Echantillons physiques"
+      },
+      "coordinator_health": {
+        "name": "Sante du coordinateur"
+      },
+      "eod_duration": {
+        "name": "Duree de cloture journaliere"
+      },
+      "data_files_status": {
+        "name": "Statut des fichiers"
+      },
+      "external_sensors_status": {
+        "name": "Statut des capteurs externes"
+      },
+      "power_sensor_state": {
+        "name": "Etat du capteur de puissance"
+      },
+      "yield_sensor_state": {
+        "name": "Etat du capteur de production"
+      },
+      "cloudiness_trend_1h": {
+        "name": "Tendance nuageuse 1h",
+        "state": {
+          "getting_clearer": "En eclaircissement",
+          "slightly_clearer": "Legerement plus clair",
+          "stable": "Stable",
+          "slightly_cloudier": "Legerement plus nuageux",
+          "getting_cloudier": "De plus en plus nuageux"
+        }
+      },
+      "cloudiness_trend_3h": {
+        "name": "Tendance nuageuse 3h",
+        "state": {
+          "much_clearer": "Nettement plus clair",
+          "getting_clearer": "En eclaircissement",
+          "relatively_stable": "Relativement stable",
+          "getting_cloudier": "De plus en plus nuageux",
+          "much_cloudier": "Nettement plus nuageux"
+        }
+      },
+      "cloudiness_volatility": {
+        "name": "Stabilite meteo",
+        "state": {
+          "very_stable": "Tres stable",
+          "stable": "Stable",
+          "moderate": "Modere",
+          "variable": "Variable",
+          "very_variable": "Tres variable"
+        },
+        "state_attributes": {
+          "interpretation": {
+            "name": "Interpretation",
+            "state": {
+              "very_stable": "Tres stable",
+              "stable": "Stable",
+              "moderate": "Modere",
+              "variable": "Variable",
+              "very_variable": "Tres variable"
+            }
+          },
+          "volatility_percent": {
+            "name": "Volatilite"
+          },
+          "volatility_class": {
+            "name": "Classe de volatilite"
+          },
+          "volatility_class_name": {
+            "name": "Classe de volatilite"
+          }
+        }
+      },
+      "shadow_current": {
+        "name": "Ombre actuelle",
+        "state": {
+          "clear": "Pas d'ombre",
+          "light_shadow": "Ombre legere",
+          "moderate_shadow": "Ombre moderee",
+          "heavy_shadow": "Ombre forte",
+          "night": "Nuit",
+          "no_data": "Pas de donnees",
+          "error": "Erreur"
+        }
+      },
+      "shadow_today": {
+        "name": "Ombre aujourd'hui",
+        "state_attributes": {
+          "shadow_hours_count": {
+            "name": "Nombre d'heures d'ombre"
+          },
+          "shadow_hours": {
+            "name": "Heures d'ombre"
+          },
+          "none_count": {
+            "name": "Pas d'ombre"
+          },
+          "light_count": {
+            "name": "Ombre legere"
+          },
+          "moderate_count": {
+            "name": "Ombre moderee"
+          },
+          "heavy_count": {
+            "name": "Ombre forte"
+          },
+          "total_analyzed_hours": {
+            "name": "Heures analysees"
+          },
+          "peak_shadow_hour": {
+            "name": "Heure d'ombre maximale"
+          },
+          "peak_shadow_percent": {
+            "name": "Pourcentage d'ombre max."
+          },
+          "cumulative_loss_kwh": {
+            "name": "Perte totale (kWh)"
+          },
+          "cloud_hours": {
+            "name": "Heures nuageuses"
+          },
+          "cloud_hours_list": {
+            "name": "Liste des heures nuageuses"
+          },
+          "real_shadow_hours": {
+            "name": "Heures d'ombre reelles"
+          },
+          "real_shadow_hours_list": {
+            "name": "Liste des heures d'ombre reelles"
+          },
+          "low_sun_hours": {
+            "name": "Heures de soleil bas"
+          },
+          "low_sun_hours_list": {
+            "name": "Liste des heures de soleil bas"
+          },
+          "daily_loss_percent": {
+            "name": "Perte journaliere (%)"
+          },
+          "date": {
+            "name": "Date"
+          },
+          "snow_hours": {
+            "name": "Heures de neige"
+          },
+          "snow_hours_list": {
+            "name": "Liste des heures de neige"
+          },
+          "hourly_breakdown": {
+            "name": "Detail horaire"
+          }
+        }
+      },
+      "next_production_start": {
+        "name": "Prochain debut de production"
+      },
+      "performance_loss_today": {
+        "name": "Perte de performance aujourd'hui"
+      },
+      "drift_status": {
+        "name": "Statut de derive IA",
+        "state": {
+          "stable": "Stable",
+          "warning": "Avertissement",
+          "critical": "Critique",
+          "recovering": "En recuperation",
+          "unknown": "Inconnu"
+        }
+      }
+    },
+    "switch": {
+      "pause_learning": {
+        "name": "Suspendre l'apprentissage"
+      }
+    }
+  },
+  "state_attributes": {
+    "forecast": {
+      "method": "Methode de prevision",
+      "confidence": "Confiance",
+      "updated": "Derniere mise a jour",
+      "weather_condition": "Condition meteo",
+      "cloud_coverage": "Couverture nuageuse",
+      "temperature": "Temperature",
+      "uv_index": "Indice UV",
+      "sunshine_duration": "Duree d'ensoleillement"
+    },
+    "model": {
+      "accuracy": "Precision",
+      "samples": "Echantillons d'entrainement",
+      "last_trained": "Dernier entrainement",
+      "mae": "Erreur absolue moyenne",
+      "rmse": "Erreur quadratique moyenne",
+      "features": "Nombre de features"
+    },
+    "production": {
+      "start_time": "Debut de production",
+      "end_time": "Fin de production",
+      "peak_time": "Heure de pointe",
+      "peak_power": "Puissance de pointe",
+      "current_power": "Puissance actuelle",
+      "total_today": "Total aujourd'hui"
+    }
+  },
+  "issues": {
+    "model_training_failed": {
+      "title": "Entrainement du modele ML echoue",
+      "description": "Entrainement echoue : {error}\nConsultez les logs pour plus de details."
+    },
+    "insufficient_data": {
+      "title": "Donnees d'entrainement insuffisantes",
+      "description": "Necessite {required} echantillons, disponibles : {current}. Continuez a collecter des donnees."
+    },
+    "weather_api_error": {
+      "title": "Erreur API meteo",
+      "description": "API meteo indisponible : {error}\nUtilisation de la prevision de secours."
+    },
+    "sensor_unavailable": {
+      "title": "Capteur indisponible",
+      "description": "Capteur requis '{entity}' indisponible. Verifiez la configuration."
+    }
+  },
+  "selector": {
+    "forecast_method": {
+      "options": {
+        "ml": "Machine Learning (si entraine)",
+        "rule_based": "Base sur regles uniquement",
+        "auto": "Automatique (ML avec repli)"
+      }
+    },
+    "ml_algorithm": {
+      "options": {
+        "auto": "Automatique (Recommande)",
+        "ridge": "Regression Ridge (Rapide)",
+        "tiny_lstm": "Reseau neuronal (Meilleure precision)"
+      }
+    }
+  }
+}

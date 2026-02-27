@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Grid Price Monitor Setup",
+        "title": "Solar Forecast GPM Setup",
         "description": "Configure your electricity market region.",
         "data": {
           "country": "Country"
@@ -46,7 +46,7 @@
         }
       },
       "reconfigure": {
-        "title": "Reconfigure Grid Price Monitor",
+        "title": "Reconfigure Solar Forecast GPM",
         "description": "Change your electricity market region. After this step, you can adjust all pricing settings.",
         "data": {
           "country": "Country"
@@ -62,13 +62,13 @@
       "unknown": "An unknown error occurred"
     },
     "abort": {
-      "already_configured": "Grid Price Monitor is already configured"
+      "already_configured": "Solar Forecast GPM is already configured"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Grid Price Monitor Options",
+        "title": "Solar Forecast GPM Options",
         "description": "Current market: **{country}**\n\nAdjust your pricing configuration. To change the country, use 'Reconfigure' instead.",
         "data": {
           "vat_rate": "VAT rate",

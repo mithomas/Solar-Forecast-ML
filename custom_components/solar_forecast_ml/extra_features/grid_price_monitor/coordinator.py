@@ -53,7 +53,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GridPriceMonitorCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Coordinator for Grid Price Monitor data updates @zara"""
+    """Coordinator for Solar Forecast GPM data updates @zara"""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator @zara"""

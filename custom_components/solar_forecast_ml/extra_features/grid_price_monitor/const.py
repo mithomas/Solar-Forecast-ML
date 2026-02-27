@@ -15,8 +15,8 @@ from homeassistant.const import Platform
 # DOMAIN & VERSION CONSTANTS
 # ============================================================================
 DOMAIN = "grid_price_monitor"
-NAME = "Grid Price Monitor"
-VERSION = "8.4.2"
+NAME = "Solar Forecast GPM"
+VERSION = "10.0.0"
 
 # ============================================================================
 # PLATFORMS

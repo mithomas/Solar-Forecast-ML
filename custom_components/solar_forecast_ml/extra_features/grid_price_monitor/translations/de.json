@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Grid Price Monitor Einrichtung",
+        "title": "Solar Forecast GPM Einrichtung",
         "description": "Konfigurieren Sie Ihre Strommarkt-Region.",
         "data": {
           "country": "Land"
@@ -46,7 +46,7 @@
         }
       },
       "reconfigure": {
-        "title": "Grid Price Monitor neu konfigurieren",
+        "title": "Solar Forecast GPM neu konfigurieren",
         "description": "Ändern Sie Ihre Strommarkt-Region. Danach können Sie alle Preiseinstellungen anpassen.",
         "data": {
           "country": "Land"
@@ -62,13 +62,13 @@
       "unknown": "Ein unbekannter Fehler ist aufgetreten"
     },
     "abort": {
-      "already_configured": "Grid Price Monitor ist bereits konfiguriert"
+      "already_configured": "Solar Forecast GPM ist bereits konfiguriert"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Grid Price Monitor Optionen",
+        "title": "Solar Forecast GPM Optionen",
         "description": "Aktueller Markt: **{country}**\n\nPassen Sie Ihre Preiskonfiguration an. Um das Land zu ändern, verwenden Sie 'Neu konfigurieren'.",
         "data": {
           "vat_rate": "MwSt-Satz",

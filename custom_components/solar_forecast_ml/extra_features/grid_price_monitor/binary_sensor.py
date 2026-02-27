@@ -50,7 +50,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Grid Price Monitor binary sensors @zara"""
+    """Set up Solar Forecast GPM binary sensors @zara"""
     # Lazy import to avoid blocking the event loop during module import
     from .coordinator import GridPriceMonitorCoordinator
 
@@ -64,7 +64,7 @@ async def async_setup_entry(
         _LOGGER.debug("Smart charging binary sensor added")
 
     async_add_entities(entities)
-    _LOGGER.debug("Added %d binary sensor(s) for Grid Price Monitor", len(entities))
+    _LOGGER.debug("Added %d binary sensor(s) for Solar Forecast GPM", len(entities))
 
 
 class GridPriceCheapEnergySensor(
@@ -101,7 +101,7 @@ class GridPriceCheapEnergySensor(
             identifiers={(DOMAIN, self._entry.entry_id)},
             name=NAME,
             manufacturer="Zara-Toorox",
-            model="Grid Price Monitor",
+            model="Solar Forecast GPM",
             sw_version=VERSION,
         )
 
@@ -170,7 +170,7 @@ class SmartChargingSensor(
             identifiers={(DOMAIN, self._entry.entry_id)},
             name=NAME,
             manufacturer="Zara-Toorox",
-            model="Grid Price Monitor",
+            model="Solar Forecast GPM",
             sw_version=VERSION,
         )
 

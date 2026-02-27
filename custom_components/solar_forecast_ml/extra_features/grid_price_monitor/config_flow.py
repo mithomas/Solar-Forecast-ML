@@ -244,7 +244,7 @@ def _get_pricing_schema(
 
 
 class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle the configuration flow for Grid Price Monitor @zara"""
+    """Handle the configuration flow for Solar Forecast GPM @zara"""
 
     VERSION = 1
 
@@ -429,7 +429,7 @@ class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class GridPriceMonitorOptionsFlow(config_entries.OptionsFlow):
-    """Handle options flow for Grid Price Monitor @zara
+    """Handle options flow for Solar Forecast GPM @zara
 
     Options flow allows quick changes to pricing without changing country.
     For country changes, use the reconfigure flow.

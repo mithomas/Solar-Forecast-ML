@@ -20,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GPMDatabaseConnector:
-    """Lightweight SQLite connector for Grid Price Monitor @zara
+    """Lightweight SQLite connector for Solar Forecast GPM @zara
 
     Uses the shared solar_forecast.db with GPM_ prefixed tables.
     """

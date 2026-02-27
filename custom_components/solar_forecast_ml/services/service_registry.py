@@ -385,11 +385,22 @@ class ServiceRegistry:
 
     async def _handle_test_morning_routine(self, call: ServiceCall) -> None:
         """Handle test_morning_routine service. @zara"""
+        _LOGGER.info("SERVICE: test_morning_routine called")
         try:
-            if hasattr(self.coordinator, "scheduled_tasks"):
-                await self.coordinator.scheduled_tasks._execute_morning_routine()
+            if not hasattr(self.coordinator, "scheduled_tasks"):
+                _LOGGER.error("SERVICE: test_morning_routine FAILED - scheduled_tasks not available on coordinator")
+                return
+            if self.coordinator.scheduled_tasks is None:
+                _LOGGER.error("SERVICE: test_morning_routine FAILED - scheduled_tasks is None")
+                return
+            _LOGGER.info("SERVICE: test_morning_routine - executing _execute_morning_routine()...")
+            success = await self.coordinator.scheduled_tasks._execute_morning_routine()
+            if success:
+                _LOGGER.info("SERVICE: test_morning_routine COMPLETED SUCCESSFULLY")
+            else:
+                _LOGGER.error("SERVICE: test_morning_routine COMPLETED but returned False (check logs above)")
         except Exception as e:
-            _LOGGER.error(f"Error in test_morning_routine: {e}")
+            _LOGGER.error(f"SERVICE: test_morning_routine EXCEPTION: {e}", exc_info=True)
 
     async def _handle_test_retrospective_forecast(self, call: ServiceCall) -> None:
         """Handle test_retrospective_forecast service - Create retrospective forecast. @zara"""
