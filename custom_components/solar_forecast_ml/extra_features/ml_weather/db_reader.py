@@ -61,7 +61,9 @@ class DatabaseReader:
                 return False
 
             try:
-                self._connection = await aiosqlite.connect(str(self._db_path))
+                self._connection = await aiosqlite.connect(
+                    str(self._db_path), timeout=60.0, isolation_level=None
+                )
                 self._connection.row_factory = aiosqlite.Row
                 # Match SFML PRAGMA settings for shared DB compatibility @zara
                 await self._connection.execute("PRAGMA foreign_keys = ON")

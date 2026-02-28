@@ -15,7 +15,7 @@ from homeassistant.const import Platform
 # Warp Core Identity @starfleet-engineering
 DOMAIN = "solar_forecast_ml"
 NAME = "Solar Forecast ML"
-VERSION = "16.8.4"
+VERSION = "16.8.6"
 SOFTWARE_VERSION = VERSION
 AI_VERSION = "3.0"
 INTEGRATION_MODEL = "Solar Forecast ML V16"
