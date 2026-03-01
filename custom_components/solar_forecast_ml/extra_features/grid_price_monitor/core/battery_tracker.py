@@ -63,6 +63,8 @@ class BatteryTracker:
         # Debounce save - prevent race condition from rapid updates
         self._save_pending = False
         self._save_interval_seconds = 60  # Save at most every 60 seconds
+        self._save_timer_handle = None
+        self._unloaded = False
 
     @property
     def current_power(self) -> float:
@@ -116,11 +118,18 @@ class BatteryTracker:
 
     async def async_unload(self) -> None:
         """Unload the battery tracker @zara"""
+        self._unloaded = True
+
+        # Cancel pending save timer before closing DB @zara
+        if self._save_timer_handle is not None:
+            self._save_timer_handle.cancel()
+            self._save_timer_handle = None
+
         if self._unsub_state_change:
             self._unsub_state_change()
             self._unsub_state_change = None
 
-        # Save data before unloading
+        # Final save before unloading (DB still open) @zara
         await self._async_save_data()
 
     @callback
@@ -211,18 +220,20 @@ class BatteryTracker:
     @callback
     def _schedule_save(self) -> None:
         """Schedule a debounced save operation @zara"""
-        if self._save_pending:
-            return  # Already scheduled
+        if self._save_pending or self._unloaded:
+            return  # Already scheduled or shutting down
 
         self._save_pending = True
 
         async def _delayed_save():
             """Perform the delayed save @zara"""
+            if self._unloaded:
+                return
             await self._async_save_data()
             self._save_pending = False
 
-        # Schedule save after interval
-        self.hass.loop.call_later(
+        # Schedule save after interval, store handle for cancellation @zara
+        self._save_timer_handle = self.hass.loop.call_later(
             self._save_interval_seconds,
             lambda: self.hass.async_create_task(_delayed_save())
         )
