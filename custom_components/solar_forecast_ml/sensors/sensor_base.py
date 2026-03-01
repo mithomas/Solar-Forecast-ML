@@ -155,7 +155,7 @@ class SolarForecastSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_ml_forecast_{key}"
         self._attr_translation_key = config["translation_key"]
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_state_class = SensorStateClass.TOTAL
         self._attr_device_class = SensorDeviceClass.ENERGY
         self._attr_icon = "mdi:solar-power"
         self._attr_suggested_display_precision = 2
@@ -308,7 +308,7 @@ class NextHourSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_ml_next_hour_forecast"
         self._attr_translation_key = "next_hour_forecast"
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_state_class = SensorStateClass.TOTAL
         self._attr_device_class = SensorDeviceClass.ENERGY
         self._attr_icon = "mdi:clock-fast"
         self._attr_suggested_display_precision = 2
@@ -511,7 +511,7 @@ class ExpectedDailyProductionSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_ml_expected_daily_production"
         self._attr_translation_key = "expected_daily_production"
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_state_class = SensorStateClass.TOTAL
         self._attr_device_class = SensorDeviceClass.ENERGY
         self._attr_icon = "mdi:solar-power-variant"
         self._attr_suggested_display_precision = 2
@@ -785,7 +785,7 @@ class ForecastDayAfterTomorrowSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_ml_forecast_day_after_tomorrow"
         self._attr_translation_key = "forecast_day_after_tomorrow"
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_state_class = SensorStateClass.TOTAL
         self._attr_device_class = SensorDeviceClass.ENERGY
         self._attr_icon = "mdi:calendar-arrow-right"
         self._attr_suggested_display_precision = 2

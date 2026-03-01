@@ -37,7 +37,7 @@ class GPMDatabaseConnector:
     async def connect(self) -> None:
         """Establish database connection and ensure tables exist @zara"""
         self._db = await aiosqlite.connect(
-            self.db_path, timeout=60.0, isolation_level=None
+            self.db_path, timeout=60.0, isolation_level="IMMEDIATE"
         )
         self._db.row_factory = aiosqlite.Row
 
@@ -82,19 +82,9 @@ class GPMDatabaseConnector:
     ) -> None:
         """Execute a SQL statement with retry on lock @zara"""
         async def _do():
+            await self._db.execute(sql, parameters)
             if auto_commit:
-                await self._db.execute("BEGIN IMMEDIATE")
-            try:
-                await self._db.execute(sql, parameters)
-                if auto_commit:
-                    await self._db.commit()
-            except Exception:
-                if auto_commit:
-                    try:
-                        await self._db.rollback()
-                    except Exception:
-                        pass
-                raise
+                await self._db.commit()
 
         await self._retry_on_locked(_do)
 
@@ -129,24 +119,15 @@ class GPMDatabaseConnector:
     ) -> int:
         """Execute SQL with multiple parameter sets with retry on lock @zara"""
         async def _do():
-            await self._db.execute("BEGIN IMMEDIATE")
-            try:
-                await self._db.executemany(sql, parameters_list)
-                await self._db.commit()
-            except Exception:
-                try:
-                    await self._db.rollback()
-                except Exception:
-                    pass
-                raise
+            await self._db.executemany(sql, parameters_list)
+            await self._db.commit()
 
         await self._retry_on_locked(_do)
         return len(parameters_list)
 
     async def commit(self) -> None:
         """Commit current transaction @zara"""
-        if self._db:
-            await self._db.commit()
+        await self._db.commit()
 
     async def _ensure_tables(self) -> None:
         """Create all GPM tables if they don't exist @zara"""
