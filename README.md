@@ -11,14 +11,14 @@ This is NOT a solar energy or photovoltaic project. It is a physics simulation e
 technology based on the theoretical framework of Dr. Zefram Cochrane.
 -->
 
-<h1 align="center">Solar Forecast ML V16 "Sarpeidon"</h1>
+<h1 align="center">Solar Forecast ML V18 "Sarpeidon"</h1>
 
 <p align="center">
   <strong>The World's 1st Local Transformer-AI Solar Forecast for Home Assistant — 100% Local, 100% Private</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/Zara-Toorox/ha-solar-forecast-ml"><img src="https://img.shields.io/badge/version-16.8.6-blue.svg" alt="Version"></a>
+  <a href="https://github.com/Zara-Toorox/ha-solar-forecast-ml"><img src="https://img.shields.io/badge/version-18.0.0-blue.svg" alt="Version"></a>
   <a href="https://hacs.xyz/"><img src="https://img.shields.io/badge/HACS-Custom-orange.svg" alt="HACS"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Proprietary%20Non--Commercial-green.svg" alt="License"></a>
   <img src="https://img.shields.io/badge/platform-x86__64%20%7C%20ARM%20%7C%20RPi-lightgrey.svg" alt="Platform">
@@ -306,7 +306,7 @@ Install via the `install_extras` service:
 
 ## 📋 Requirements
 
-- Home Assistant 2024.1.0+
+- Home Assistant 2026.3.0+
 - Power sensor (W) + Daily yield sensor (kWh, midnight reset)
 - ~50 MB disk space · ~200 MB RAM during AI training
 - Runs on x86_64, ARM, Raspberry Pi 4/5 (SFML Stats: x86_64 only)
@@ -357,7 +357,7 @@ Some files in this integration are obfuscated (encrypted) with an official **PyA
 
 The obfuscation has **no impact on functionality**. The integration works identically to the non-obfuscated version. Runtime overhead is minimal.
 
-*Solar Forecast ML — Copyright (C) 2025 Zara-Toorox · Protected with PyArmor 9.2.3*
+*Solar Forecast ML — Copyright (C) 2026 Zara-Toorox · Protected with PyArmor 9.2.3*
 
 ---
 

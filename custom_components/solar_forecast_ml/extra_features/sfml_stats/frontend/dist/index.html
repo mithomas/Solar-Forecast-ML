@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SFML STATS Dashboard by Zara</title>
+    <title>SFML STATS - Energy-Dashboard V14 by Zara</title>
 
     <!-- ECharts for Charts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -32,7 +32,7 @@
 
     <div id="app">
         <header class="header">
-            <h1>SFML STATS Dashboard by Zara</h1>
+            <h1>SFML STATS - Energy-Dashboard V14 by Zara</h1>
             <div class="header-controls">
                 <button @click="toggleDashboardStyle" class="style-toggle" :class="{'active-3d': dashboardStyle === '3d', 'active-2d': dashboardStyle === '2d', 'active-list': dashboardStyle === 'list'}" :title="dashboardStyle === '3d' ? 'Zu 2D wechseln' : dashboardStyle === '2d' ? 'Zur Liste wechseln' : 'Zu 3D wechseln'">
                     <span class="style-toggle-icon">{{ getDashboardStyleIcon() }}</span>
@@ -2173,8 +2173,12 @@
                                     <span style="color: #fbbf24;">{{ (consumerModal.stats.heatpump.daily_kwh * consumerModal.stats.heatpump.cop)?.toFixed(2) || 0 }} kWh</span>
                                 </div>
                                 <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between; margin-top: 4px; padding-top: 4px; border-top: 1px solid #30363d;">
-                                    <span class="modal-stat-label">Kosten:</span>
+                                    <span class="modal-stat-label">Kosten heute:</span>
                                     <span style="color: #f87171;">{{ consumerModal.stats.heatpump.cost_today?.toFixed(2) || 0 }} €</span>
+                                </div>
+                                <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between;">
+                                    <span class="modal-stat-label">Kosten Zeitraum:</span>
+                                    <span style="color: #94a3b8;">{{ consumerModal.stats.heatpump.cost_period?.toFixed(2) || 0 }} €</span>
                                 </div>
                             </div>
                         </div>
@@ -2196,8 +2200,12 @@
                                     <span style="color: #f0f6fc;">{{ consumerModal.stats.heatingrod.daily_kwh?.toFixed(2) || 0 }} kWh</span>
                                 </div>
                                 <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between; margin-top: 4px; padding-top: 4px; border-top: 1px solid #30363d;">
-                                    <span class="modal-stat-label">Kosten:</span>
+                                    <span class="modal-stat-label">Kosten heute:</span>
                                     <span style="color: #f87171;">{{ consumerModal.stats.heatingrod.cost_today?.toFixed(2) || 0 }} €</span>
+                                </div>
+                                <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between;">
+                                    <span class="modal-stat-label">Kosten Zeitraum:</span>
+                                    <span style="color: #94a3b8;">{{ consumerModal.stats.heatingrod.cost_period?.toFixed(2) || 0 }} €</span>
                                 </div>
                             </div>
                         </div>
@@ -2225,8 +2233,12 @@
                                     </span>
                                 </div>
                                 <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between; margin-top: 4px; padding-top: 4px; border-top: 1px solid #30363d;">
-                                    <span class="modal-stat-label">Kosten:</span>
+                                    <span class="modal-stat-label">Kosten heute:</span>
                                     <span style="color: #f87171;">{{ consumerModal.stats.wallbox.cost_today?.toFixed(2) || 0 }} €</span>
+                                </div>
+                                <div v-if="energyBalance.priceMode !== 'none'" style="display: flex; justify-content: space-between;">
+                                    <span class="modal-stat-label">Kosten Zeitraum:</span>
+                                    <span style="color: #94a3b8;">{{ consumerModal.stats.wallbox.cost_period?.toFixed(2) || 0 }} €</span>
                                 </div>
                             </div>
                         </div>
@@ -2237,14 +2249,18 @@
                     </div>
 
                     <!-- Totals Row -->
-                    <div class="modal-stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 16px;">
+                    <div class="modal-stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 16px;">
                         <div class="modal-stat-card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));">
                             <div class="modal-stat-value" style="color: #22c55e;">{{ consumerModal.stats.total_daily_kwh?.toFixed(2) || 0 }} kWh</div>
                             <div class="modal-stat-label">Verbraucher gesamt heute</div>
                         </div>
                         <div class="modal-stat-card" v-if="energyBalance.priceMode !== 'none'" style="background: linear-gradient(135deg, rgba(248, 113, 113, 0.15), rgba(248, 113, 113, 0.05));">
                             <div class="modal-stat-value" style="color: #f87171;">{{ consumerModal.stats.total_cost_today?.toFixed(2) || 0 }} €</div>
-                            <div class="modal-stat-label">Gesamtkosten heute</div>
+                            <div class="modal-stat-label">Kosten heute</div>
+                        </div>
+                        <div class="modal-stat-card" v-if="energyBalance.priceMode !== 'none'" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.10), rgba(148, 163, 184, 0.05));">
+                            <div class="modal-stat-value" style="color: #94a3b8;">{{ consumerModal.stats.total_cost_period?.toFixed(2) || 0 }} €</div>
+                            <div class="modal-stat-label">Kosten Abrechnungszeitraum</div>
                         </div>
                     </div>
 
@@ -3757,11 +3773,12 @@
                     isOpen: false,
                     activeTab: 'today',
                     stats: {
-                        heatpump: { power: 0, daily_kwh: 0, cop: 3.5, cost_today: 0 },
-                        heatingrod: { power: 0, daily_kwh: 0, cost_today: 0 },
-                        wallbox: { power: 0, daily_kwh: 0, state: 'idle', cost_today: 0 },
+                        heatpump: { power: 0, daily_kwh: 0, cop: 3.5, cost_today: 0, cost_period: 0 },
+                        heatingrod: { power: 0, daily_kwh: 0, cost_today: 0, cost_period: 0 },
+                        wallbox: { power: 0, daily_kwh: 0, state: 'idle', cost_today: 0, cost_period: 0 },
                         total_daily_kwh: 0,
-                        total_cost_today: 0
+                        total_cost_today: 0,
+                        total_cost_period: 0
                     },
                     billingData: null  // From billing API
                 });
@@ -5164,18 +5181,21 @@
                             power: hp?.power || 0,
                             daily_kwh: hp?.daily_kwh || 0,
                             cop: hp?.cop || 3.5,
-                            cost_today: 0  // Will be calculated from billing data
+                            cost_today: 0,
+                            cost_period: 0
                         };
                         consumerModal.stats.heatingrod = {
                             power: hr?.power || 0,
                             daily_kwh: hr?.daily_kwh || 0,
-                            cost_today: 0
+                            cost_today: 0,
+                            cost_period: 0
                         };
                         consumerModal.stats.wallbox = {
                             power: wb?.power || 0,
                             daily_kwh: wb?.daily_kwh || 0,
                             state: wb?.state || 'idle',
-                            cost_today: 0
+                            cost_today: 0,
+                            cost_period: 0
                         };
                         consumerModal.stats.total_daily_kwh =
                             (hp?.daily_kwh || 0) + (hr?.daily_kwh || 0) + (wb?.daily_kwh || 0);
@@ -5200,10 +5220,14 @@
                         const data = await response.json();
                         if (data.success && data.consumers) {
                             consumerModal.billingData = data.consumers;
-                            consumerModal.stats.heatpump.cost_today = data.consumers.heatpump?.cost_eur || 0;
-                            consumerModal.stats.heatingrod.cost_today = data.consumers.heatingrod?.cost_eur || 0;
-                            consumerModal.stats.wallbox.cost_today = data.consumers.wallbox?.cost_eur || 0;
-                            consumerModal.stats.total_cost_today = data.consumers.total_cost_eur || 0;
+                            consumerModal.stats.heatpump.cost_today = data.consumers.heatpump?.daily_cost_eur || 0;
+                            consumerModal.stats.heatpump.cost_period = data.consumers.heatpump?.cost_eur || 0;
+                            consumerModal.stats.heatingrod.cost_today = data.consumers.heatingrod?.daily_cost_eur || 0;
+                            consumerModal.stats.heatingrod.cost_period = data.consumers.heatingrod?.cost_eur || 0;
+                            consumerModal.stats.wallbox.cost_today = data.consumers.wallbox?.daily_cost_eur || 0;
+                            consumerModal.stats.wallbox.cost_period = data.consumers.wallbox?.cost_eur || 0;
+                            consumerModal.stats.total_cost_today = data.consumers.daily_cost_eur || 0;
+                            consumerModal.stats.total_cost_period = data.consumers.total_cost_eur || 0;
                         }
                     } catch (error) {
                         console.error('Error fetching consumer billing data:', error);
@@ -5225,7 +5249,7 @@
                         backgroundColor: 'transparent',
                         tooltip: {
                             trigger: 'axis',
-                            formatter: '{b}: {c} kWh'
+                            formatter: function(params) { return params[0].name + ': ' + params[0].value.toFixed(2) + ' kWh'; }
                         },
                         grid: {
                             left: '3%',
@@ -5258,7 +5282,7 @@
                             label: {
                                 show: true,
                                 position: 'top',
-                                formatter: '{c} kWh',
+                                formatter: function(params) { return params.value.toFixed(2) + ' kWh'; },
                                 color: '#f0f6fc'
                             }
                         }]
