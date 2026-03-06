@@ -41,7 +41,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from homeassistant.core import ServiceCall
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.typing import ConfigType
 
 from .const import (
@@ -50,6 +54,7 @@ from .const import (
     VERSION,
 )
 from .core.core_helpers import SafeDateTimeUtil as dt_util
+from .entry_helpers import get_entry_display_name
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,6 +62,7 @@ _LOGGER = logging.getLogger(__name__)
 _log_queue_listener: Optional[QueueListener] = None
 _log_queue_handler: Optional[QueueHandler] = None
 _logging_initialized: bool = False
+SERVICE_TARGET_ENTRY_TITLE = "entry_title"
 
 
 async def _migrate_db_remove_default_panel_group(data_manager: "DataManager") -> bool:
@@ -484,13 +490,24 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        coordinator = hass.data[DOMAIN].pop(entry.entry_id)
+        domain_data = hass.data[DOMAIN]
+        coordinator = domain_data.pop(entry.entry_id)
 
         await coordinator.async_shutdown()
 
+        service_registries = domain_data.get("service_registries", {})
+        service_registries.pop(entry.entry_id, None)
+
         reset_cache_manager()
 
-        if not hass.data[DOMAIN]:
+        remaining_loaded_entries = [
+            config_entry
+            for config_entry in hass.config_entries.async_entries(DOMAIN)
+            if config_entry.entry_id != entry.entry_id
+            and config_entry.state is ConfigEntryState.LOADED
+        ]
+
+        if not remaining_loaded_entries:
             _async_unregister_services(hass)
 
             # Stop logging when last entry is unloaded @zara
@@ -586,19 +603,139 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
 async def _async_register_services(
     hass: HomeAssistant, entry: ConfigEntry, coordinator: "SolarForecastMLCoordinator"
 ) -> None:
-    """Register integration services using Service Registry. @zara"""
+    """Initialize per-entry handlers and register global service routers. @zara"""
     from .services.service_registry import ServiceRegistry
 
-    registry = ServiceRegistry(hass, entry, coordinator)
-    await registry.async_register_all_services()
+    domain_data = hass.data[DOMAIN]
+    service_registries = domain_data.setdefault("service_registries", {})
 
-    hass.data[DOMAIN]["service_registry"] = registry
+    registry = ServiceRegistry(hass, entry, coordinator)
+    await registry.async_initialize()
+    service_registries[entry.entry_id] = registry
+
+    if domain_data.get("services_registered"):
+        return
+
+    for service_name in ServiceRegistry.get_service_names():
+        if hass.services.has_service(DOMAIN, service_name):
+            hass.services.async_remove(DOMAIN, service_name)
+        hass.services.async_register(
+            DOMAIN,
+            service_name,
+            _build_service_router(hass, service_name),
+        )
+
+    domain_data["services_registered"] = True
+    _LOGGER.debug("Global service routers registered for %d services", len(ServiceRegistry.get_service_names()))
 
 
 def _async_unregister_services(hass: HomeAssistant) -> None:
-    """Unregister integration services using Service Registry. @zara"""
-    registry = hass.data[DOMAIN].get("service_registry")
-    if registry:
-        registry.unregister_all_services()
-    else:
-        _LOGGER.warning("Service registry not found for cleanup")
+    """Unregister global integration services. @zara"""
+    from .services.service_registry import ServiceRegistry
+
+    domain_data = hass.data.get(DOMAIN, {})
+
+    for service_name in ServiceRegistry.get_service_names():
+        if hass.services.has_service(DOMAIN, service_name):
+            hass.services.async_remove(DOMAIN, service_name)
+
+    domain_data.pop("services_registered", None)
+    domain_data.pop("service_registries", None)
+
+
+def _build_service_router(
+    hass: HomeAssistant, service_name: str
+):
+    """Build a global service router for a specific service name."""
+
+    async def _route_service(call: ServiceCall) -> None:
+        registry = _resolve_service_registry(hass, call)
+        handler = registry.get_service_handler(service_name)
+
+        if handler is None:
+            raise HomeAssistantError(f"Service handler '{service_name}' is not available")
+
+        _LOGGER.debug(
+            "Routing service %s to entry %s (%s)",
+            service_name,
+            registry.entry.entry_id,
+            get_entry_display_name(registry.entry),
+        )
+        await handler(call)
+
+    return _route_service
+
+
+def _resolve_service_registry(hass: HomeAssistant, call: ServiceCall):
+    """Resolve the target service registry for a service call."""
+    service_registries = hass.data.get(DOMAIN, {}).get("service_registries", {})
+    if not service_registries:
+        raise HomeAssistantError("No loaded Solar Forecast ML forecasts are available")
+
+    call_data = call.data or {}
+    targets: dict[str, str] = {}
+
+    entry_id = call_data.get("entry_id")
+    if isinstance(entry_id, str) and entry_id.strip():
+        targets["entry_id"] = entry_id.strip()
+
+    forecast_entity = call_data.get("forecast_entity")
+    if isinstance(forecast_entity, str) and forecast_entity.strip():
+        targets["forecast_entity"] = forecast_entity.strip()
+
+    entry_title = call_data.get(SERVICE_TARGET_ENTRY_TITLE)
+    if isinstance(entry_title, str) and entry_title.strip():
+        targets[SERVICE_TARGET_ENTRY_TITLE] = entry_title.strip()
+
+    if len(targets) > 1:
+        raise HomeAssistantError(
+            "Specify only one Solar Forecast ML service target: "
+            "'forecast_entity', 'entry_title', or 'entry_id'."
+        )
+
+    entry_id = targets.get("entry_id")
+    if isinstance(entry_id, str) and entry_id.strip():
+        registry = service_registries.get(entry_id.strip())
+        if registry is not None:
+            return registry
+        raise HomeAssistantError(f"Solar Forecast ML entry_id '{entry_id}' was not found")
+
+    forecast_entity = targets.get("forecast_entity")
+    if isinstance(forecast_entity, str) and forecast_entity.strip():
+        entity_entry = er.async_get(hass).async_get(forecast_entity.strip())
+        if entity_entry and entity_entry.config_entry_id in service_registries:
+            return service_registries[entity_entry.config_entry_id]
+
+        raise HomeAssistantError(
+            f"Entity '{forecast_entity}' is not managed by a loaded Solar Forecast ML forecast"
+        )
+
+    entry_title = targets.get(SERVICE_TARGET_ENTRY_TITLE)
+    if isinstance(entry_title, str) and entry_title.strip():
+        normalized_title = entry_title.strip().casefold()
+        matches = [
+            registry
+            for registry in service_registries.values()
+            if get_entry_display_name(registry.entry).casefold() == normalized_title
+        ]
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            raise HomeAssistantError(
+                f"Multiple Solar Forecast ML forecasts use the entry title '{entry_title}'. "
+                "Use 'forecast_entity' or 'entry_id' instead."
+            )
+        raise HomeAssistantError(f"Solar Forecast ML entry_title '{entry_title}' was not found")
+
+    if len(service_registries) == 1:
+        return next(iter(service_registries.values()))
+
+    available_targets = ", ".join(
+        f"{get_entry_display_name(registry.entry)} [{entry_id[:6]}]"
+        for entry_id, registry in service_registries.items()
+    )
+    raise HomeAssistantError(
+        "Multiple Solar Forecast ML forecasts are loaded. "
+        "Specify 'forecast_entity', 'entry_title', or 'entry_id'. "
+        f"Available targets: {available_targets}"
+    )

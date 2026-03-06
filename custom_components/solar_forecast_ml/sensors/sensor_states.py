@@ -44,6 +44,7 @@ from ..const import (
     AI_VERSION,
     SOFTWARE_VERSION,
 )
+from ..entry_helpers import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,9 +74,8 @@ class BaseEntityStateSensor(SensorEntity):
         self._attr_icon = icon
         self._source_entity_id: Optional[str] = None
 
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",
@@ -179,9 +179,8 @@ class ExternalSensorsStatusSensor(SensorEntity):
         self._attr_icon = "mdi:sensor-check"
         self._attr_name = "External Sensors Status"
 
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",

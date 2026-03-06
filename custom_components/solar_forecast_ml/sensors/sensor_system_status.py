@@ -30,6 +30,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from ..const import DOMAIN
 from ..coordinator import SolarForecastMLCoordinator
 from ..core.core_helpers import SafeDateTimeUtil as dt_util
+from ..entry_helpers import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,12 +59,11 @@ class SystemStatusSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self):
         """Return device information. @zara"""
-        return {
-            "identifiers": {(DOMAIN, self.coordinator.entry.entry_id)},
-            "name": "Solar Forecast ML",
-            "manufacturer": "Zara-Toorox",
-            "model": "Solar Forecast ML AI-Version",
-        }
+        return build_device_info(
+            self.coordinator.entry,
+            manufacturer="Zara-Toorox",
+            model="Solar Forecast ML AI-Version",
+        )
 
     @property
     def icon(self) -> str:

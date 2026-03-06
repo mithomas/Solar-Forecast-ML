@@ -84,6 +84,7 @@ from .const import (
     DOMAIN,
     VERSION,
 )
+from .entry_helpers import derive_entry_title
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -276,6 +277,7 @@ class SolarForecastMLConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         """Initialize the config flow. @zara"""
         self._user_input: dict[str, Any] = {}
+        self._entry_title: str = ""
         self._reconfigure_entry: config_entries.ConfigEntry | None = None
 
     @staticmethod
@@ -368,6 +370,10 @@ class SolarForecastMLConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 cleaned_data[CONF_INVERTER_MAX_POWER] = DEFAULT_INVERTER_MAX_POWER
 
             self._user_input = cleaned_data
+            self._entry_title = derive_entry_title(
+                self.hass,
+                cleaned_data.get(CONF_POWER_ENTITY),
+            )
             return await self.async_step_panel_groups()
 
         return self.async_show_form(
@@ -416,7 +422,12 @@ class SolarForecastMLConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             if not errors:
                 return self.async_create_entry(
-                    title="Solar Forecast ML", data=self._user_input
+                    title=self._entry_title
+                    or derive_entry_title(
+                        self.hass,
+                        self._user_input.get(CONF_POWER_ENTITY),
+                    ),
+                    data=self._user_input,
                 )
 
         existing_groups = self._user_input.get(CONF_PANEL_GROUPS, [])
@@ -642,7 +653,9 @@ class SolarForecastMLConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             if not errors:
                 return self.async_update_reload_and_abort(
-                    entry, data=self._user_input, reason="reconfigure_successful"
+                    entry,
+                    data_updates=self._user_input,
+                    reason="reconfigure_successful",
                 )
 
         existing_groups = self._user_input.get(CONF_PANEL_GROUPS, [])

@@ -30,6 +30,7 @@ from ..const import (
     SOFTWARE_VERSION,
     AI_VERSION,
 )
+from ..entry_helpers import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,9 +52,8 @@ class DriftStatusSensor(CoordinatorEntity, SensorEntity):
         self._attr_device_class = None
         self._attr_state_class = None
         self._attr_icon = "mdi:chart-timeline-variant-shimmer"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",

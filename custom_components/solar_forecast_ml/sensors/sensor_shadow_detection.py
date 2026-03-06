@@ -38,6 +38,7 @@ from ..const import (
     CACHE_PREDICTIONS,
     PRED_TARGET_DATE,
 )
+from ..entry_helpers import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -180,9 +181,8 @@ class ShadowCurrentSensor(CoordinatorEntity, SensorEntity):
         self._attr_device_class = None
         self._attr_state_class = None
         self._attr_icon = "mdi:weather-sunny-alert"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",
@@ -333,9 +333,8 @@ class ShadowTodaySensor(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = "hours"
         self._attr_icon = "mdi:weather-sunset"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",
@@ -557,9 +556,8 @@ class PerformanceLossTodaySensor(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.TOTAL
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
         self._attr_icon = "mdi:solar-power-variant"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",

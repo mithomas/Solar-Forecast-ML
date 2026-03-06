@@ -50,6 +50,24 @@ from ..data.db_manager import DatabaseManager
 _LOGGER = logging.getLogger(__name__)
 
 
+SERVICE_NAMES = [
+    SERVICE_RETRAIN_AI_MODEL,
+    SERVICE_RESET_AI_MODEL,
+    SERVICE_RUN_GRID_SEARCH,
+    SERVICE_ANALYZE_FEATURE_IMPORTANCE,
+    SERVICE_RUN_ALL_DAY_END_TASKS,
+    SERVICE_TEST_MORNING_ROUTINE,
+    SERVICE_TEST_RETROSPECTIVE_FORECAST,
+    SERVICE_RUN_ADAPTIVE_FORECAST,
+    SERVICE_RUN_WEATHER_CORRECTION,
+    SERVICE_REFRESH_MULTI_WEATHER,
+    SERVICE_BUILD_ASTRONOMY_CACHE,
+    SERVICE_REFRESH_CACHE_TODAY,
+    SERVICE_SEND_DAILY_BRIEFING,
+    SERVICE_BACKFILL_SHADOW_DETECTION,
+]
+
+
 @dataclass
 class ServiceDefinition:
     """Service definition for registration. @zara"""
@@ -82,16 +100,38 @@ class ServiceRegistry:
             return getattr(data_manager, "_db_manager", None)
         return None
 
+    @classmethod
+    def get_service_names(cls) -> list[str]:
+        """Return the globally exposed service names."""
+        return list(SERVICE_NAMES)
+
+    async def async_initialize(self) -> None:
+        """Initialize per-entry service handlers without registering HA services."""
+        if self._astronomy_handler is None:
+            from ..services.service_astronomy import AstronomyServiceHandler
+
+            self._astronomy_handler = AstronomyServiceHandler(
+                self.hass, self.entry, self.coordinator
+            )
+            await self._astronomy_handler.initialize()
+
+        if self._daily_briefing_handler is None:
+            from ..services.service_daily_briefing import DailyBriefingService
+
+            self._daily_briefing_handler = DailyBriefingService(self.hass, self.coordinator)
+
+    def get_service_handler(
+        self, service_name: str
+    ) -> Callable[[ServiceCall], Awaitable[None]] | None:
+        """Resolve the bound handler for a service name."""
+        for service in self._build_service_definitions():
+            if service.name == service_name:
+                return service.handler
+        return None
+
     async def async_register_all_services(self) -> None:
         """Register all services. @zara"""
-        from ..services.service_astronomy import AstronomyServiceHandler
-
-        self._astronomy_handler = AstronomyServiceHandler(self.hass, self.entry, self.coordinator)
-        await self._astronomy_handler.initialize()
-
-        from ..services.service_daily_briefing import DailyBriefingService
-
-        self._daily_briefing_handler = DailyBriefingService(self.hass, self.coordinator)
+        await self.async_initialize()
 
         services = self._build_service_definitions()
 

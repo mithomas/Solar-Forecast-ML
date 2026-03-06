@@ -93,7 +93,7 @@
       "invalid_capacity": "Мощность должна быть от 0.1 до 1000.0 кВтп",
       "invalid_input": "Неверный формат ввода",
       "required": "Обязательное поле",
-      "already_configured": "Метео-объект уже используется",
+      "already_configured": "Датчик мощности уже используется",
       "sensor_not_found": "Объект датчика не найден",
       "invalid_sensor_state": "Состояние датчика недействительно или недоступно",
       "invalid_panel_format": "Неверный формат. Используйте: Мощность/Азимут/Наклон (напр. 1200/180/30)",
@@ -170,16 +170,56 @@
   "services": {
     "retrain_ai_model": {
       "name": "Переобучить модель ИИ TinyLSTM",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "reset_ai_model": {
       "name": "Сбросить модель ИИ TinyLSTM",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "run_grid_search": {
       "name": "Grid-Search оптимизация гиперпараметров",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "retrain_after": {
           "name": "Переобучить после поиска",
           "description": "DEVELOPER ONLY or on ADVICE"
@@ -190,6 +230,18 @@
       "name": "Анализ важности признаков",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "num_permutations": {
           "name": "Количество перестановок",
           "description": "DEVELOPER ONLY or on ADVICE"
@@ -198,28 +250,110 @@
     },
     "run_all_day_end_tasks": {
       "name": "Выполнить все задачи конца дня",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "test_morning_routine": {
       "name": "Анализировать утренние прогнозы",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "test_retrospective_forecast": {
       "name": "Ретроспективный прогноз",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "run_adaptive_forecast": {
       "name": "Выполнить адаптивную коррекцию полудня",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "run_weather_correction": {
       "name": "Пересоздать скорректированный прогноз погоды",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "refresh_multi_weather": {
       "name": "Обновить мульти-метеокэш",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "force_update": {
           "name": "Принудительное обновление",
           "description": "DEVELOPER ONLY or on ADVICE"
@@ -230,6 +364,18 @@
       "name": "Построить кэш астрономии",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "days_back": {
           "name": "Дней назад",
           "description": "DEVELOPER ONLY or on ADVICE"
@@ -242,12 +388,38 @@
     },
     "refresh_cache_today": {
       "name": "Обновить кэш на сегодня",
-      "description": "DEVELOPER ONLY or on ADVICE"
+      "description": "DEVELOPER ONLY or on ADVICE",
+      "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        }
+      }
     },
     "send_daily_briefing": {
       "name": "Отправить ежедневный солнечный отчёт",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "notify_service": {
           "name": "Мобильное устройство",
           "description": "DEVELOPER ONLY or on ADVICE"
@@ -262,6 +434,18 @@
       "name": "Выполнить обнаружение теней ретроактивно",
       "description": "DEVELOPER ONLY or on ADVICE",
       "fields": {
+        "forecast_entity": {
+          "name": "Forecast Entity",
+          "description": "Optional. Select any entity from the target Solar Forecast ML forecast."
+        },
+        "entry_title": {
+          "name": "Entry Title",
+          "description": "Optional. Target by the existing Home Assistant config entry title."
+        },
+        "entry_id": {
+          "name": "Config Entry ID",
+          "description": "Optional. Target by the Home Assistant config entry ID."
+        },
         "target_date": {
           "name": "Целевая дата",
           "description": "DEVELOPER ONLY or on ADVICE"

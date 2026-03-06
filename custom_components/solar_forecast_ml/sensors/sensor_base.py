@@ -75,6 +75,7 @@ from ..const import (
 )
 from ..coordinator import SolarForecastMLCoordinator
 from ..data.db_manager import DatabaseManager
+from ..entry_helpers import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -95,6 +96,26 @@ def _build_hourly_attributes(predictions: list) -> dict:
     return {"hours": hours}
 
 
+def _sum_prediction_values(predictions: list[dict[str, Any]]) -> Optional[float]:
+    """Sum forecast values from cached hourly predictions."""
+    total = 0.0
+    has_value = False
+
+    for prediction in predictions:
+        kwh = prediction.get(PRED_PREDICTION_KWH)
+        if kwh is None:
+            kwh = prediction.get(PRED_PREDICTED_KWH)
+
+        if isinstance(kwh, (int, float)):
+            total += float(kwh)
+            has_value = True
+
+    if not has_value:
+        return None
+
+    return round(total, 2)
+
+
 class BaseSolarSensor(CoordinatorEntity, SensorEntity):
     """Base class for core sensors updated by the coordinator. @zara"""
 
@@ -105,9 +126,8 @@ class BaseSolarSensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self.entry = entry
         self._db: Optional[DatabaseManager] = None
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name="Solar Forecast ML",
+        self._attr_device_info = build_device_info(
+            entry,
             manufacturer="Zara-Toorox",
             model=INTEGRATION_MODEL,
             sw_version=f"SW {SOFTWARE_VERSION} | AI {AI_VERSION}",
@@ -128,7 +148,7 @@ class BaseSolarSensor(CoordinatorEntity, SensorEntity):
 
 
 class SolarForecastSensor(SensorEntity):
-    """Sensor for today's or tomorrow's solar forecast using DB. @zara"""
+    """Sensor for today's or tomorrow's solar forecast. @zara"""
 
     _attr_has_entity_name = True
     _attr_should_poll = False
@@ -175,31 +195,30 @@ class SolarForecastSensor(SensorEntity):
         """Return if entity is available. @zara"""
         return True
 
-    async def _load_tomorrow_from_db(self) -> None:
-        """Load tomorrow forecast directly from daily_forecasts DB table. @zara"""
+    async def _load_tomorrow_value(self) -> None:
+        """Load tomorrow forecast from coordinator-scoped cached data. @zara"""
         try:
-            db = self._coordinator.data_manager._db_manager
-            if not db:
-                return
-            from homeassistant.util import dt as dt_util
-            tomorrow_str = (dt_util.now() + timedelta(days=1)).date().isoformat()
-            row = await db.fetchone(
-                """SELECT prediction_kwh FROM daily_forecasts
-                   WHERE forecast_type = 'tomorrow' AND forecast_date = ?""",
-                (tomorrow_str,)
-            )
-            if row and row[0] is not None:
-                self._cached_tomorrow_value = round(float(row[0]), 2)
-            elif self._coordinator.data:
-                self._cached_tomorrow_value = self._coordinator.data.get(self._data_key) or 0.0
-        except Exception as e:
-            _LOGGER.warning("Failed to load tomorrow forecast from DB: %s", e)
+            cache = getattr(self._coordinator, CACHE_HOURLY_PREDICTIONS, None)
+            if isinstance(cache, dict):
+                cached_total = _sum_prediction_values(cache.get(CACHE_PREDICTIONS_TOMORROW, []))
+                if cached_total is not None:
+                    self._cached_tomorrow_value = cached_total
+                    return
+
             if self._coordinator.data:
-                self._cached_tomorrow_value = self._coordinator.data.get(self._data_key) or 0.0
+                cached_value = self._coordinator.data.get(self._data_key)
+                if isinstance(cached_value, (int, float)):
+                    self._cached_tomorrow_value = round(float(cached_value), 2)
+                    return
+
+            self._cached_tomorrow_value = 0.0
+        except Exception as e:
+            _LOGGER.warning("Failed to load tomorrow forecast from coordinator cache: %s", e)
+            self._cached_tomorrow_value = 0.0
 
     @property
     def native_value(self) -> float:
-        """Return the forecast value from DB. @zara"""
+        """Return the forecast value. @zara"""
         if self._key == "tomorrow":
             return self._cached_tomorrow_value
 
@@ -255,7 +274,7 @@ class SolarForecastSensor(SensorEntity):
         await super().async_added_to_hass()
 
         if self._key == "tomorrow":
-            await self._load_tomorrow_from_db()
+            await self._load_tomorrow_value()
 
         self.async_on_remove(self._coordinator.async_add_listener(self._handle_coordinator_update))
 
@@ -282,8 +301,8 @@ class SolarForecastSensor(SensorEntity):
             self.async_write_ha_state()
 
     async def _reload_tomorrow_and_update(self) -> None:
-        """Reload tomorrow value from DB and update state. @zara"""
-        await self._load_tomorrow_from_db()
+        """Reload tomorrow value and update state. @zara"""
+        await self._load_tomorrow_value()
         self.async_write_ha_state()
 
     @callback
@@ -293,7 +312,7 @@ class SolarForecastSensor(SensorEntity):
 
 
 class NextHourSensor(SensorEntity):
-    """Sensor for the next hour's solar forecast from DB. @zara"""
+    """Sensor for the next hour's solar forecast from coordinator cache. @zara"""
 
     _attr_has_entity_name = True
     _attr_should_poll = False
@@ -344,7 +363,7 @@ class NextHourSensor(SensorEntity):
 
         return attributes
 
-    async def _load_from_db(self) -> None:
+    async def _load_from_cache(self) -> None:
         """Load next hour forecast from coordinator cache. @zara"""
         try:
             from homeassistant.util import dt as dt_util
@@ -394,7 +413,7 @@ class NextHourSensor(SensorEntity):
     async def async_added_to_hass(self) -> None:
         """Setup sensor with DB loading. @zara"""
         await super().async_added_to_hass()
-        await self._load_from_db()
+        await self._load_from_cache()
         self.async_on_remove(self._coordinator.async_add_listener(self._handle_coordinator_update))
         self.async_write_ha_state()
 
@@ -405,7 +424,7 @@ class NextHourSensor(SensorEntity):
 
     async def _reload_and_update(self) -> None:
         """Reload value and update state. @zara"""
-        await self._load_from_db()
+        await self._load_from_cache()
         self.async_write_ha_state()
 
 
@@ -811,35 +830,39 @@ class ForecastDayAfterTomorrowSensor(SensorEntity):
             return {}
         return _build_hourly_attributes(cache.get(CACHE_PREDICTIONS_DAY_AFTER, []))
 
-    async def _load_from_db(self) -> None:
-        """Load day after tomorrow forecast directly from daily_forecasts DB table. @zara"""
+    async def _load_value(self) -> None:
+        """Load day-after-tomorrow forecast from coordinator-scoped cached data. @zara"""
         try:
-            db = self._coordinator.data_manager._db_manager
-            if not db:
-                return
-            from homeassistant.util import dt as dt_util
-            day_after_str = (dt_util.now() + timedelta(days=2)).date().isoformat()
-            row = await db.fetchone(
-                """SELECT prediction_kwh FROM daily_forecasts
-                   WHERE forecast_type = 'day_after_tomorrow' AND forecast_date = ?""",
-                (day_after_str,)
-            )
-            if row and row[0] is not None:
-                self._cached_value = round(float(row[0]), 2)
-            elif self._coordinator.data:
+            cache = getattr(self._coordinator, CACHE_HOURLY_PREDICTIONS, None)
+            if isinstance(cache, dict):
+                cached_total = _sum_prediction_values(cache.get(CACHE_PREDICTIONS_DAY_AFTER, []))
+                if cached_total is not None:
+                    self._cached_value = cached_total
+                    return
+
+            if self._coordinator.data:
                 day_after = self._coordinator.data.get(DATA_KEY_FORECAST_DAY_AFTER)
                 if isinstance(day_after, (int, float)):
-                    self._cached_value = float(day_after)
+                    self._cached_value = round(float(day_after), 2)
+                    return
                 elif isinstance(day_after, dict):
-                    self._cached_value = day_after.get(PRED_PREDICTION_KWH)
+                    cached_value = day_after.get(PRED_PREDICTION_KWH)
+                    if isinstance(cached_value, (int, float)):
+                        self._cached_value = round(float(cached_value), 2)
+                        return
+
+            self._cached_value = None
         except Exception as e:
-            _LOGGER.warning("Failed to load ForecastDayAfterTomorrowSensor from DB: %s", e)
+            _LOGGER.warning(
+                "Failed to load ForecastDayAfterTomorrowSensor from coordinator cache: %s",
+                e,
+            )
             self._cached_value = None
 
     async def async_added_to_hass(self) -> None:
         """Setup sensor. @zara"""
         await super().async_added_to_hass()
-        await self._load_from_db()
+        await self._load_value()
         self.async_on_remove(self._coordinator.async_add_listener(self._handle_coordinator_update))
         self.async_write_ha_state()
 
@@ -850,7 +873,7 @@ class ForecastDayAfterTomorrowSensor(SensorEntity):
 
     async def _reload_and_update(self) -> None:
         """Reload value and update state. @zara"""
-        await self._load_from_db()
+        await self._load_value()
         self.async_write_ha_state()
 
 

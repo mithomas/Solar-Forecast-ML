@@ -14,17 +14,80 @@
 retrain_ai_model:
   name: "🧠 Retrain TinyLSTM AI Model"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 reset_ai_model:
   name: "⚠️ Reset TinyLSTM AI Model"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 run_grid_search:
   name: "⚠️ Grid-Search Hyperparameter Optimization (DESTRUCTIVE)"
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     retrain_after:
       name: "Retrain after search"
       description: "Retrain model with best parameters after grid search completes"
@@ -36,6 +99,27 @@ analyze_feature_importance:
   name: "📊 Analyze Feature Importance (DEVELOPER ONLY)"
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     num_permutations:
       name: "Anzahl Permutationen"
       description: "Developer only or on advice."
@@ -55,7 +139,28 @@ analyze_feature_importance:
 run_all_day_end_tasks:
   name: "🌙 Run All Day-End Tasks"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 # ============================================================================
 # Simulation Diagnostic Services
@@ -64,17 +169,80 @@ run_all_day_end_tasks:
 test_morning_routine:
   name: "🧪 TEST: Analyze 6 AM Morning Predictions (Real Data)"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 test_retrospective_forecast:
   name: "🔄 TEST: Retrospective Forecast (Current Code)"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 run_adaptive_forecast:
   name: "🔄 Run Adaptive Midday Correction"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 # ============================================================================
 # Stellar Cartography Services
@@ -84,6 +252,27 @@ build_astronomy_cache:
   name: "🌞 Build Astronomy Cache"
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     days_back:
       name: "Days Back"
       description: "Developer only or on advice."
@@ -108,7 +297,28 @@ build_astronomy_cache:
 refresh_cache_today:
   name: "🔄 Refresh Cache for Today"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 # ============================================================================
 # Nebula Analysis Services
@@ -117,12 +327,54 @@ refresh_cache_today:
 run_weather_correction:
   name: "🔄 Rebuild Corrected Weather Forecast"
   description: "Developer only or on advice."
-  fields: {}
+  fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
 
 refresh_multi_weather:
   name: "🌤️ Refresh Multi-Weather Cache"
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     force_update:
       name: "Force Update"
       description: "Developer only or on advice."
@@ -140,6 +392,27 @@ send_daily_briefing:
   name: Send Daily Solar Briefing
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     notify_service:
       name: Mobile Device (Optional)
       description: "Developer only or on advice."
@@ -170,6 +443,27 @@ backfill_shadow_detection:
   name: "🔍 Backfill Shadow Detection"
   description: "Developer only or on advice."
   fields:
+    forecast_entity:
+      name: "Forecast Entity"
+      description: "Optional. Select any entity from the target Solar Forecast ML forecast."
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - switch
+    entry_title:
+      name: "Entry Title"
+      description: "Optional. Target by the existing Home Assistant config entry title."
+      required: false
+      selector:
+        text:
+    entry_id:
+      name: "Config Entry ID"
+      description: "Optional. Target by the Home Assistant config entry ID."
+      required: false
+      selector:
+        text:
     target_date:
       name: "Target Date"
       description: "Developer only or on advice."
