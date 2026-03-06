@@ -19,6 +19,7 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
     CONF_BATTERY_CAPACITY,
     CONF_BATTERY_POWER_SENSOR,
@@ -30,6 +31,7 @@ from .const import (
     CONF_MAX_SOC,
     CONF_MIN_SOC,
     CONF_PROVIDER_MARKUP,
+    CONF_SFML_CONFIG_ENTRY_ID,
     CONF_SMART_CHARGING_ENABLED,
     CONF_TAXES_FEES,
     CONF_USE_CALIBRATION,
@@ -73,9 +75,33 @@ def _get_default_vat_for_country(country: str) -> int:
     return VAT_RATE_AT if country == "AT" else VAT_RATE_DE
 
 
-def _get_country_schema(default_country: str = DEFAULT_COUNTRY) -> vol.Schema:
+def _get_sfml_options(hass) -> list[selector.SelectOptionDict]:
+    """Build selector options for Solar Forecast ML entries."""
+    return [
+        selector.SelectOptionDict(
+            value=entry.entry_id,
+            label=CoordinatorInitHelpers.get_entry_label(entry),
+        )
+        for entry in CoordinatorInitHelpers.get_config_entries(hass)
+    ]
+
+
+def _get_country_schema(
+    sfml_options: list[selector.SelectOptionDict],
+    default_country: str = DEFAULT_COUNTRY,
+    default_sfml_entry_id: str | None = None,
+) -> vol.Schema:
     """Returns the country selection schema @zara"""
     return vol.Schema({
+        vol.Required(
+            CONF_SFML_CONFIG_ENTRY_ID,
+            default=default_sfml_entry_id or sfml_options[0]["value"],
+        ): selector.SelectSelector(
+            selector.SelectSelectorConfig(
+                options=sfml_options,
+                mode=selector.SelectSelectorMode.DROPDOWN,
+            ),
+        ),
         vol.Required(
             CONF_COUNTRY,
             default=default_country,
@@ -246,12 +272,13 @@ def _get_pricing_schema(
 class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle the configuration flow for Solar Forecast GPM @zara"""
 
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self) -> None:
         """Initialize the config flow @zara"""
         self._calibration_spot_price: float | None = None
         self._selected_country: str = DEFAULT_COUNTRY
+        self._selected_sfml_entry_id: str | None = None
         self._selected_vat_rate: int = VAT_RATE_DE
         self._existing_data: dict[str, Any] = {}
 
@@ -268,20 +295,28 @@ class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle the initial setup step - country selection @zara"""
         errors: dict[str, str] = {}
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
 
         if user_input is not None:
             self._selected_country = user_input.get(CONF_COUNTRY, DEFAULT_COUNTRY)
+            self._selected_sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
             self._selected_vat_rate = _get_default_vat_for_country(self._selected_country)
 
-            # Check if already configured
-            await self.async_set_unique_id(DOMAIN)
-            self._abort_if_unique_id_configured()
+            if CoordinatorInitHelpers.get_config_entry(self.hass, self._selected_sfml_entry_id) is None:
+                errors["base"] = "invalid_sfml_binding"
+            else:
+                # Check if already configured
+                await self.async_set_unique_id(DOMAIN)
+                self._abort_if_unique_id_configured()
 
-            return await self.async_step_pricing()
+                return await self.async_step_pricing()
 
         return self.async_show_form(
             step_id="user",
-            data_schema=_get_country_schema(),
+            data_schema=_get_country_schema(sfml_options),
             errors=errors,
         )
 
@@ -329,6 +364,7 @@ class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
                 data = {
                     CONF_COUNTRY: self._selected_country,
+                    CONF_SFML_CONFIG_ENTRY_ID: self._selected_sfml_entry_id,
                     CONF_VAT_RATE: vat_rate,
                     CONF_GRID_FEE: grid_fee,
                     CONF_TAXES_FEES: taxes_fees,
@@ -397,11 +433,19 @@ class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         entry = self._get_reconfigure_entry()
         self._existing_data = dict(entry.data)
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
 
         if user_input is not None:
             self._selected_country = user_input.get(
                 CONF_COUNTRY,
                 self._existing_data.get(CONF_COUNTRY, DEFAULT_COUNTRY)
+            )
+            self._selected_sfml_entry_id = user_input.get(
+                CONF_SFML_CONFIG_ENTRY_ID,
+                self._existing_data.get(CONF_SFML_CONFIG_ENTRY_ID),
             )
             # Update default VAT if country changes
             if self._selected_country != self._existing_data.get(CONF_COUNTRY):
@@ -412,13 +456,24 @@ class GridPriceMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_VAT_RATE, _get_default_vat_for_country(self._selected_country)
                 )
 
-            return await self.async_step_pricing()
+            if CoordinatorInitHelpers.get_config_entry(self.hass, self._selected_sfml_entry_id) is None:
+                errors["base"] = "invalid_sfml_binding"
+            else:
+                return await self.async_step_pricing()
 
         current_country = self._existing_data.get(CONF_COUNTRY, DEFAULT_COUNTRY)
+        current_sfml_entry_id = self._existing_data.get(
+            CONF_SFML_CONFIG_ENTRY_ID,
+            sfml_options[0]["value"],
+        )
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=_get_country_schema(current_country),
+            data_schema=_get_country_schema(
+                sfml_options,
+                current_country,
+                current_sfml_entry_id,
+            ),
             errors=errors,
         )
 
@@ -441,12 +496,20 @@ class GridPriceMonitorOptionsFlow(config_entries.OptionsFlow):
         """Manage the options @zara"""
         errors: dict[str, str] = {}
         current_data = self.config_entry.data
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
 
         if user_input is not None:
             # Validate max_price
             max_price = user_input.get(CONF_MAX_PRICE, DEFAULT_MAX_PRICE)
             if max_price <= 0:
                 errors[CONF_MAX_PRICE] = "invalid_max_price"
+
+            sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
+            if CoordinatorInitHelpers.get_config_entry(self.hass, sfml_entry_id) is None:
+                errors["base"] = "invalid_sfml_binding"
 
             # Get VAT rate from input (comes as string from selector)
             vat_rate_str = user_input.get(
@@ -459,6 +522,7 @@ class GridPriceMonitorOptionsFlow(config_entries.OptionsFlow):
                 # Merge with existing data (keep country)
                 new_data = {
                     **self.config_entry.data,
+                    CONF_SFML_CONFIG_ENTRY_ID: sfml_entry_id,
                     CONF_VAT_RATE: vat_rate,
                     CONF_GRID_FEE: user_input.get(CONF_GRID_FEE),
                     CONF_TAXES_FEES: user_input.get(CONF_TAXES_FEES),
@@ -476,6 +540,7 @@ class GridPriceMonitorOptionsFlow(config_entries.OptionsFlow):
                     self.config_entry,
                     data=new_data,
                 )
+                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
 
                 return self.async_create_entry(title="", data={})
 
@@ -483,6 +548,18 @@ class GridPriceMonitorOptionsFlow(config_entries.OptionsFlow):
         current_vat = current_data.get(CONF_VAT_RATE, _get_default_vat_for_country(current_country))
 
         schema = vol.Schema({
+            vol.Required(
+                CONF_SFML_CONFIG_ENTRY_ID,
+                default=current_data.get(
+                    CONF_SFML_CONFIG_ENTRY_ID,
+                    sfml_options[0]["value"],
+                ),
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=sfml_options,
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                ),
+            ),
             vol.Required(
                 CONF_VAT_RATE,
                 default=str(current_vat),

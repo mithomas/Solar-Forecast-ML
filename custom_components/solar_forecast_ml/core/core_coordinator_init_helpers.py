@@ -16,6 +16,7 @@ parameter resolution.
 """
 
 import logging
+from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -24,6 +25,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
+_ACTIVE_ENTRY_ID: ContextVar[str | None] = ContextVar(
+    "solar_forecast_ml_active_entry_id", default=None
+)
 
 try:
     from ..const import (
@@ -86,6 +90,42 @@ class CoordinatorInitHelpers:
     """Helper methods for coordinator initialization. @zara"""
 
     @staticmethod
+    def set_active_entry(entry: ConfigEntry) -> Token[str | None]:
+        """Store the config entry ID in the current task context. @zara"""
+        return _ACTIVE_ENTRY_ID.set(entry.entry_id)
+
+    @staticmethod
+    def reset_active_entry(token: Token[str | None]) -> None:
+        """Reset the task-local config entry context. @zara"""
+        _ACTIVE_ENTRY_ID.reset(token)
+
+    @staticmethod
+    def get_config_entries(hass: HomeAssistant) -> list[ConfigEntry]:
+        """Return configured Solar Forecast ML entries. @zara"""
+        return hass.config_entries.async_entries(DOMAIN)
+
+    @staticmethod
+    def get_config_entry(
+        hass: HomeAssistant,
+        entry_id: str | None,
+    ) -> ConfigEntry | None:
+        """Look up a Solar Forecast ML config entry by ID. @zara"""
+        if not entry_id:
+            return None
+
+        for entry in CoordinatorInitHelpers.get_config_entries(hass):
+            if entry.entry_id == entry_id:
+                return entry
+
+        return None
+
+    @staticmethod
+    def get_entry_label(entry: ConfigEntry) -> str:
+        """Return a readable label for a Solar Forecast ML entry. @zara"""
+        title = entry.title or entry.data.get("name") or DOMAIN
+        return f"{title} ({entry.entry_id[:8]})"
+
+    @staticmethod
     def extract_configuration(entry: ConfigEntry) -> CoordinatorConfiguration:
         """Extract configuration from entry. @zara"""
         solar_capacity_value = entry.data.get(CONF_SOLAR_CAPACITY)
@@ -125,8 +165,41 @@ class CoordinatorInitHelpers:
         )
 
     @staticmethod
-    def setup_data_directory(hass: HomeAssistant) -> Path:
-        """Setup and return data directory path. @zara"""
-        config_dir = hass.config.path()
-        data_dir_path = Path(config_dir) / DOMAIN
-        return data_dir_path
+    def setup_data_directory(
+        hass: HomeAssistant,
+        entry: ConfigEntry | None = None,
+    ) -> Path:
+        """Return the data directory for the active config entry. @zara"""
+        base_dir = Path(hass.config.path(DOMAIN))
+
+        active_entry_id = entry.entry_id if entry is not None else _ACTIVE_ENTRY_ID.get()
+        if active_entry_id is None:
+            return base_dir
+
+        entries_dir = base_dir / "entries"
+        return entries_dir / active_entry_id
+
+    @staticmethod
+    def resolve_data_directory(
+        hass: HomeAssistant,
+        entry_or_id: ConfigEntry | str,
+    ) -> Path:
+        """Resolve the data directory for a specific config entry. @zara"""
+        entry = (
+            entry_or_id
+            if isinstance(entry_or_id, ConfigEntry)
+            else CoordinatorInitHelpers.get_config_entry(hass, entry_or_id)
+        )
+        if entry is None:
+            raise ValueError("Solar Forecast ML config entry could not be resolved")
+
+        return CoordinatorInitHelpers.setup_data_directory(hass, entry)
+
+    @staticmethod
+    def resolve_database_path(
+        hass: HomeAssistant,
+        entry_or_id: ConfigEntry | str,
+        filename: str = "solar_forecast.db",
+    ) -> Path:
+        """Resolve a database path for a specific config entry. @zara"""
+        return CoordinatorInitHelpers.resolve_data_directory(hass, entry_or_id) / filename

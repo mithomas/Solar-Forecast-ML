@@ -9,7 +9,6 @@
 """Config flow for ML Weather integration."""
 
 import logging
-from pathlib import Path
 from typing import Any
 
 import voluptuous as vol
@@ -17,114 +16,71 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import selector
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
     DOMAIN,
-    CONF_DATA_PATH,
     CONF_NAME,
-    DEFAULT_DATA_PATH,
+    CONF_SFML_CONFIG_ENTRY_ID,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
-# Allowed base directories for security
-ALLOWED_BASE_PATHS = ("/config/", "/share/")
 
-
-def _validate_path_security(path: str) -> bool:
-    """Validate that path is within allowed directories."""
-    # Handle relative paths by resolving against /config
-    if not Path(path).is_absolute():
-        resolved_path = str((Path("/config") / path).resolve())
-    else:
-        resolved_path = str(Path(path).resolve())
-    return any(resolved_path.startswith(base) for base in ALLOWED_BASE_PATHS)
-
-
-def _validate_db_file(path: str) -> tuple[bool, str | None]:
-    """Validate that database file exists and is accessible.
-
-    Returns:
-        Tuple of (is_valid, error_key) where error_key is None if valid.
-    """
-    file_path = Path(path)
-
-    # If path is relative, resolve against /config
-    if not file_path.is_absolute():
-        file_path = Path("/config") / file_path
-
-    if not file_path.exists():
-        return False, "db_not_found"
-
-    if not file_path.is_file():
-        return False, "not_a_file"
-
-    if not str(file_path).endswith(".db"):
-        return False, "not_a_database"
-
-    # Verify it's a valid SQLite database with required tables
-    try:
-        import sqlite3
-        conn = sqlite3.connect(str(file_path))
-        cursor = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('weather_forecast', 'daily_forecasts')"
+def _get_sfml_options(hass) -> list[selector.SelectOptionDict]:
+    """Build selector options for Solar Forecast ML entries."""
+    return [
+        selector.SelectOptionDict(
+            value=entry.entry_id,
+            label=CoordinatorInitHelpers.get_entry_label(entry),
         )
-        tables = {row[0] for row in cursor.fetchall()}
-        conn.close()
-
-        if "weather_forecast" not in tables:
-            return False, "missing_weather_table"
-
-    except Exception:
-        return False, "invalid_database"
-
-    return True, None
+        for entry in CoordinatorInitHelpers.get_config_entries(hass)
+    ]
 
 
 class MLWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for ML Weather."""
 
-    VERSION = 2
+    VERSION = 3
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
 
         if user_input is not None:
-            data_path = user_input.get(CONF_DATA_PATH, DEFAULT_DATA_PATH)
-
-            # Security check: ensure path is within allowed directories
-            is_secure = await self.hass.async_add_executor_job(
-                _validate_path_security, data_path
-            )
-            if not is_secure:
-                errors["base"] = "path_not_allowed"
+            sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
+            if CoordinatorInitHelpers.get_config_entry(self.hass, sfml_entry_id) is None:
+                errors["base"] = "invalid_sfml_binding"
             else:
-                # Validate database file
-                is_valid, error_key = await self.hass.async_add_executor_job(
-                    _validate_db_file, data_path
+                name = user_input.get(CONF_NAME, "ML Weather")
+                await self.async_set_unique_id(f"ml_weather_{name.lower().replace(' ', '_')}")
+                self._abort_if_unique_id_configured()
+
+                return self.async_create_entry(
+                    title=name,
+                    data=user_input,
                 )
-
-                if not is_valid:
-                    errors["base"] = error_key
-                else:
-                    # Create unique ID based on name
-                    name = user_input.get(CONF_NAME, "ML Weather")
-                    await self.async_set_unique_id(f"ml_weather_{name.lower().replace(' ', '_')}")
-                    self._abort_if_unique_id_configured()
-
-                    return self.async_create_entry(
-                        title=name,
-                        data=user_input,
-                    )
 
         # Show the form
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_NAME, default="ML Weather"): str,
-                vol.Required(CONF_DATA_PATH, default=DEFAULT_DATA_PATH): str,
+                vol.Required(
+                    CONF_SFML_CONFIG_ENTRY_ID,
+                    default=sfml_options[0]["value"],
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sfml_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
             }
         )
 
@@ -155,32 +111,43 @@ class MLWeatherOptionsFlow(config_entries.OptionsFlow):
     ) -> FlowResult:
         """Manage the options."""
         errors: dict[str, str] = {}
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
 
         if user_input is not None:
-            data_path = user_input.get(CONF_DATA_PATH, DEFAULT_DATA_PATH)
-
-            # Security check
-            is_secure = await self.hass.async_add_executor_job(
-                _validate_path_security, data_path
-            )
-            if not is_secure:
-                errors["base"] = "path_not_allowed"
+            sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
+            if CoordinatorInitHelpers.get_config_entry(self.hass, sfml_entry_id) is None:
+                errors["base"] = "invalid_sfml_binding"
             else:
-                # Validate database file
-                is_valid, error_key = await self.hass.async_add_executor_job(
-                    _validate_db_file, data_path
+                new_data = {
+                    **self.config_entry.data,
+                    CONF_SFML_CONFIG_ENTRY_ID: sfml_entry_id,
+                }
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry,
+                    data=new_data,
                 )
+                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                return self.async_create_entry(title="", data={})
 
-                if not is_valid:
-                    errors["base"] = error_key
-                else:
-                    return self.async_create_entry(title="", data=user_input)
-
-        current_path = self.config_entry.data.get(CONF_DATA_PATH, DEFAULT_DATA_PATH)
+        current_binding = self.config_entry.data.get(
+            CONF_SFML_CONFIG_ENTRY_ID,
+            sfml_options[0]["value"],
+        )
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_DATA_PATH, default=current_path): str,
+                vol.Required(
+                    CONF_SFML_CONFIG_ENTRY_ID,
+                    default=current_binding,
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sfml_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
             }
         )
 

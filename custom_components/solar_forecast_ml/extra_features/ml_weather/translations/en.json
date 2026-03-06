@@ -3,30 +3,24 @@
     "step": {
       "user": {
         "title": "ML Weather Setup",
-        "description": "Configure the ML Weather integration that provides corrected weather data from Solar Forecast ML.",
+        "description": "Configure the ML Weather integration that provides corrected weather data from a specific Solar Forecast ML instance.",
         "data": {
           "name": "Name",
-          "data_path": "Path to Solar Forecast ML database"
+          "sfml_config_entry_id": "Solar Forecast ML instance"
         },
         "data_description": {
           "name": "Display name for the weather entity",
-          "data_path": "Relative path to the Solar Forecast ML database file (e.g., solar_forecast_ml/solar_forecast.db)"
+          "sfml_config_entry_id": "Select which Solar Forecast ML config entry this ML Weather instance should read from"
         }
       }
     },
     "error": {
-      "db_not_found": "The database file was not found. Please check the path.",
-      "not_a_file": "The specified path is not a file.",
-      "not_a_database": "The specified file is not a .db database file.",
-      "missing_weather_table": "The database does not contain the required weather_forecast table.",
-      "invalid_database": "The file is not a valid SQLite database.",
-      "permission_denied": "Permission denied. Cannot read the database file.",
-      "cannot_read": "Cannot read the file. Please check permissions.",
-      "path_not_allowed": "Path must be within /config/ or /share/ directory.",
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available.",
       "unknown": "An unknown error occurred."
     },
     "abort": {
-      "already_configured": "This weather source is already configured."
+      "already_configured": "This weather source is already configured.",
+      "no_sfml_entries": "Configure Solar Forecast ML first."
     }
   },
   "options": {
@@ -34,19 +28,15 @@
       "init": {
         "title": "ML Weather Options",
         "data": {
-          "data_path": "Path to Solar Forecast ML database"
+          "sfml_config_entry_id": "Solar Forecast ML instance"
         }
       }
     },
     "error": {
-      "db_not_found": "The database file was not found. Please check the path.",
-      "not_a_file": "The specified path is not a file.",
-      "not_a_database": "The specified file is not a .db database file.",
-      "missing_weather_table": "The database does not contain the required weather_forecast table.",
-      "invalid_database": "The file is not a valid SQLite database.",
-      "permission_denied": "Permission denied. Cannot read the database file.",
-      "cannot_read": "Cannot read the file. Please check permissions.",
-      "path_not_allowed": "Path must be within /config/ or /share/ directory."
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available."
+    },
+    "abort": {
+      "no_sfml_entries": "Configure Solar Forecast ML first."
     }
   },
   "entity": {

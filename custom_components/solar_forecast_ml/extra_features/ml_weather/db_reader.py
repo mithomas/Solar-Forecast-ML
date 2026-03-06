@@ -27,10 +27,13 @@ MAX_RECONNECT_ATTEMPTS = 3
 class DatabaseReader:
     """Reads weather and PV forecast data from the Solar Forecast ML database."""
 
-    def __init__(self, hass: HomeAssistant, db_path: str) -> None:
+    def __init__(self, hass: HomeAssistant, db_path: str | Path) -> None:
         """Initialize the database reader."""
         self._hass = hass
-        self._db_path = Path(hass.config.path(db_path))
+        resolved_path = Path(db_path)
+        if not resolved_path.is_absolute():
+            resolved_path = Path(hass.config.path(str(resolved_path)))
+        self._db_path = resolved_path
         self._connection: aiosqlite.Connection | None = None
         self._is_connected: bool = False
         self._lock = asyncio.Lock()

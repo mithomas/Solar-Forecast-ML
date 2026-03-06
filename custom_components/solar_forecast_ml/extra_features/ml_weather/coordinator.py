@@ -17,12 +17,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
     DOMAIN,
-    DEFAULT_DB_PATH,
     DEFAULT_SCAN_INTERVAL,
-    CONF_DATA_PATH,
     CONDITION_MAP,
+    CONF_SFML_CONFIG_ENTRY_ID,
     FORECAST_HOURS,
     FORECAST_DAYS,
     RAIN_THRESHOLD_LIGHT,
@@ -45,7 +45,10 @@ class MLWeatherCoordinator(DataUpdateCoordinator):
         """Initialize the coordinator."""
         self.hass = hass
         self.entry = entry
-        db_path = entry.data.get(CONF_DATA_PATH, DEFAULT_DB_PATH)
+        db_path = CoordinatorInitHelpers.resolve_database_path(
+            hass,
+            entry.data[CONF_SFML_CONFIG_ENTRY_ID],
+        )
         self._db_reader = DatabaseReader(hass, db_path)
         self._raw_data: dict = {}
         self._pv_forecast_data: dict = {}

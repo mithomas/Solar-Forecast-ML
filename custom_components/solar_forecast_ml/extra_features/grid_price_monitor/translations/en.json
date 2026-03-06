@@ -5,9 +5,11 @@
         "title": "Solar Forecast GPM Setup",
         "description": "Configure your electricity market region.",
         "data": {
+          "sfml_config_entry_id": "Solar Forecast ML instance",
           "country": "Country"
         },
         "data_description": {
+          "sfml_config_entry_id": "Select which Solar Forecast ML instance this Grid Price Monitor entry should read forecasts from",
           "country": "Select your electricity market (Germany or Austria)"
         }
       },
@@ -49,20 +51,24 @@
         "title": "Reconfigure Solar Forecast GPM",
         "description": "Change your electricity market region. After this step, you can adjust all pricing settings.",
         "data": {
+          "sfml_config_entry_id": "Solar Forecast ML instance",
           "country": "Country"
         },
         "data_description": {
+          "sfml_config_entry_id": "Select which Solar Forecast ML instance this Grid Price Monitor entry should read forecasts from",
           "country": "Select your electricity market (Germany or Austria)"
         }
       }
     },
     "error": {
       "calibration_failed": "Calibration failed. Please enter values manually.",
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available.",
       "cannot_connect": "Unable to connect to aWATTar API",
       "unknown": "An unknown error occurred"
     },
     "abort": {
-      "already_configured": "Solar Forecast GPM is already configured"
+      "already_configured": "Solar Forecast GPM is already configured",
+      "no_sfml_entries": "Configure Solar Forecast ML first."
     }
   },
   "options": {
@@ -71,6 +77,7 @@
         "title": "Solar Forecast GPM Options",
         "description": "Current market: **{country}**\n\nAdjust your pricing configuration. To change the country, use 'Reconfigure' instead.",
         "data": {
+          "sfml_config_entry_id": "Solar Forecast ML instance",
           "vat_rate": "VAT rate",
           "grid_fee": "Grid fee",
           "taxes_fees": "Taxes and fees",
@@ -84,6 +91,7 @@
           "min_soc": "Minimum charge level"
         },
         "data_description": {
+          "sfml_config_entry_id": "Select which Solar Forecast ML instance this Grid Price Monitor entry should read forecasts from",
           "vat_rate": "VAT rate applied to spot price",
           "grid_fee": "Network charges from your grid operator (ct/kWh, gross)",
           "taxes_fees": "Electricity tax, EEG surcharge, etc. (ct/kWh, gross)",
@@ -99,7 +107,11 @@
       }
     },
     "error": {
-      "invalid_max_price": "Maximum price must be greater than 0"
+      "invalid_max_price": "Maximum price must be greater than 0",
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available."
+    },
+    "abort": {
+      "no_sfml_entries": "Configure Solar Forecast ML first."
     }
   },
   "entity": {

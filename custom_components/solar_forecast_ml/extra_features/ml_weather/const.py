@@ -31,14 +31,8 @@ ML_WEATHER_COORDINATOR = "ml_weather_coordinator"
 ML_WEATHER_DATA = "ml_weather_data"
 
 # Config keys
-CONF_DATA_PATH = "data_path"  # Keep for backward compatibility with config entries
 CONF_NAME = "name"
-
-# Database path (relative to HA config directory)
-DEFAULT_DB_PATH = "solar_forecast_ml/solar_forecast.db"
-
-# Legacy alias for config flow
-DEFAULT_DATA_PATH = DEFAULT_DB_PATH
+CONF_SFML_CONFIG_ENTRY_ID = "sfml_config_entry_id"
 
 # Forecast attributes (extra beyond standard HA)
 ATTR_FORECAST_CLOUD_COVERAGE = "cloud_coverage"

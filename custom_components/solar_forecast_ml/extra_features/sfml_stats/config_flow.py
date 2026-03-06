@@ -21,9 +21,11 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
     DOMAIN,
     NAME,
+    CONF_SFML_CONFIG_ENTRY_ID,
     CONF_GENERATE_WEEKLY,
     CONF_GENERATE_MONTHLY,
     CONF_AUTO_GENERATE,
@@ -229,6 +231,17 @@ def _get_entity_selector(key: str) -> selector.EntitySelector:
     )
 
 
+def _get_sfml_options(hass) -> list[selector.SelectOptionDict]:
+    """Build selector options for Solar Forecast ML entries."""
+    return [
+        selector.SelectOptionDict(
+            value=entry.entry_id,
+            label=CoordinatorInitHelpers.get_entry_label(entry),
+        )
+        for entry in CoordinatorInitHelpers.get_config_entries(hass)
+    ]
+
+
 def _build_setup_sensor_schema(sensor_keys: list[str]) -> vol.Schema:
     """Build schema for setup sensor configuration. @zara"""
     schema_dict = {}
@@ -240,7 +253,7 @@ def _build_setup_sensor_schema(sensor_keys: list[str]) -> vol.Schema:
 class SFMLStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for SFML Stats. @zara"""
 
-    VERSION = 6
+    VERSION = 7
 
     def __init__(self) -> None:
         """Initialize the config flow. @zara"""
@@ -255,6 +268,10 @@ class SFMLStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
+        sfml_options = _get_sfml_options(self.hass)
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
+
         if _is_raspberry_pi():
             _LOGGER.error(
                 "Installation on Raspberry Pi is not supported due to performance limitations."
@@ -268,11 +285,39 @@ class SFMLStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="proxmox_not_recommended")
 
         if user_input is not None:
+            sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
+            if CoordinatorInitHelpers.get_config_entry(self.hass, sfml_entry_id) is None:
+                return self.async_show_form(
+                    step_id="user",
+                    data_schema=vol.Schema({
+                        vol.Required(
+                            CONF_SFML_CONFIG_ENTRY_ID,
+                            default=sfml_options[0]["value"],
+                        ): selector.SelectSelector(
+                            selector.SelectSelectorConfig(
+                                options=sfml_options,
+                                mode=selector.SelectSelectorMode.DROPDOWN,
+                            )
+                        ),
+                    }),
+                    errors={"base": "invalid_sfml_binding"},
+                )
+            self._data[CONF_SFML_CONFIG_ENTRY_ID] = sfml_entry_id
             return await self.async_step_sensors_setup()
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({}),
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_SFML_CONFIG_ENTRY_ID,
+                    default=sfml_options[0]["value"],
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sfml_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
+            }),
         )
 
     async def async_step_sensors_setup(
@@ -502,6 +547,8 @@ class SFMLStatsOptionsFlow(config_entries.OptionsFlow):
                 return await self.async_step_sensors_smartmeter()
             elif next_step == "consumers":
                 return await self.async_step_consumers()
+            elif next_step == "source":
+                return await self.async_step_source()
             elif next_step == "settings":
                 return await self.async_step_settings()
             elif next_step == "advanced":
@@ -515,9 +562,71 @@ class SFMLStatsOptionsFlow(config_entries.OptionsFlow):
                     "sensors_battery": "Battery Sensors (Optional)",
                     "sensors_smartmeter": "Smartmeter (Optional)",
                     "consumers": "Consumers (Heat Pump, Heating Rod, Wallbox)",
+                    "source": "Solar Forecast ML Source",
                     "settings": "Settings",
                     "advanced": "Advanced",
                 }),
+            }),
+        )
+
+    async def async_step_source(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Manage the bound Solar Forecast ML source. @zara"""
+        sfml_options = _get_sfml_options(self.hass)
+
+        if not sfml_options:
+            return self.async_abort(reason="no_sfml_entries")
+
+        if user_input is not None:
+            sfml_entry_id = user_input.get(CONF_SFML_CONFIG_ENTRY_ID)
+            if CoordinatorInitHelpers.get_config_entry(self.hass, sfml_entry_id) is None:
+                return self.async_show_form(
+                    step_id="source",
+                    data_schema=vol.Schema({
+                        vol.Required(
+                            CONF_SFML_CONFIG_ENTRY_ID,
+                            default=self._config_entry.data.get(
+                                CONF_SFML_CONFIG_ENTRY_ID,
+                                sfml_options[0]["value"],
+                            ),
+                        ): selector.SelectSelector(
+                            selector.SelectSelectorConfig(
+                                options=sfml_options,
+                                mode=selector.SelectSelectorMode.DROPDOWN,
+                            )
+                        ),
+                    }),
+                    errors={"base": "invalid_sfml_binding"},
+                )
+
+            new_data = {
+                **self._config_entry.data,
+                CONF_SFML_CONFIG_ENTRY_ID: sfml_entry_id,
+            }
+            self.hass.config_entries.async_update_entry(
+                self._config_entry,
+                data=new_data,
+            )
+            await self.hass.config_entries.async_reload(self._config_entry.entry_id)
+            return self.async_create_entry(title="", data={})
+
+        return self.async_show_form(
+            step_id="source",
+            data_schema=vol.Schema({
+                vol.Required(
+                    CONF_SFML_CONFIG_ENTRY_ID,
+                    default=self._config_entry.data.get(
+                        CONF_SFML_CONFIG_ENTRY_ID,
+                        sfml_options[0]["value"],
+                    ),
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sfml_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
             }),
         )
 

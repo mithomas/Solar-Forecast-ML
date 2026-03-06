@@ -113,6 +113,7 @@ COLORS: Final = {
 
 LOGGER_NAME: Final = "sfml_stats"
 
+CONF_SFML_CONFIG_ENTRY_ID: Final = "sfml_config_entry_id"
 CONF_GENERATE_WEEKLY: Final = "generate_weekly"
 CONF_GENERATE_MONTHLY: Final = "generate_monthly"
 CONF_AUTO_GENERATE: Final = "auto_generate"

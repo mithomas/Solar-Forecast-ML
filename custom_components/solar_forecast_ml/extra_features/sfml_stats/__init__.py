@@ -31,13 +31,15 @@ from pathlib import Path
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.event import async_track_time_change
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
+    CONF_SFML_CONFIG_ENTRY_ID,
     DOMAIN,
     NAME,
     VERSION,
-    SOLAR_FORECAST_DB,
     CONF_SENSOR_SMARTMETER_IMPORT_KWH,
     CONF_WEATHER_ENTITY,
     DAILY_AGGREGATION_HOUR,
@@ -78,39 +80,20 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     return True
 
 
-async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
-    """Migrate old entry to new version. @zara"""
-    _LOGGER.info(
-        "Migrating SFML Stats from version %s to %s",
-        config_entry.version, VERSION
-    )
-
-    new_data = {**config_entry.data}
-
-    if config_entry.version < 2:
-        hass.config_entries.async_update_entry(
-            config_entry,
-            data=new_data,
-            version=2
-        )
-        _LOGGER.info("Migration to version 2 successful")
-
-    if config_entry.version < 6:
-        hass.config_entries.async_update_entry(
-            config_entry,
-            data=new_data,
-            version=6
-        )
-        _LOGGER.info("Migration to version 6 successful")
-
-    return True
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up SFML Stats from a config entry. @zara"""
     _LOGGER.info("Setting up %s (Entry: %s)", NAME, entry.entry_id)
 
-    validator = DataValidator(hass)
+    sfml_entry_id = entry.data.get(CONF_SFML_CONFIG_ENTRY_ID)
+    sfml_entry = CoordinatorInitHelpers.get_config_entry(hass, sfml_entry_id)
+    if sfml_entry is None:
+        raise ConfigEntryError(
+            "SFML Stats requires a bound Solar Forecast ML instance; remove and re-add the entry."
+        )
+
+    solar_db_path = CoordinatorInitHelpers.resolve_database_path(hass, sfml_entry)
+
+    validator = DataValidator(hass, solar_db_path)
     init_success = await validator.async_initialize()
 
     if not init_success:
@@ -120,7 +103,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     db_manager = None
     try:
         _LOGGER.info("Initializing database connection manager...")
-        db_manager = await DatabaseConnectionManager.get_instance(hass)
+        db_manager = await DatabaseConnectionManager.get_instance(hass, solar_db_path)
         _LOGGER.info("Database connection manager initialized successfully")
         _LOGGER.info("Manager connected: %s, available: %s", db_manager.is_connected, db_manager.is_available)
 
@@ -331,7 +314,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         try:
             from .readers.forecast_comparison_reader import ForecastComparisonReader
-            reader = ForecastComparisonReader(config_path / SOLAR_FORECAST_DB)
+            reader = ForecastComparisonReader(solar_db_path)
 
             needs_historical = False
 
@@ -367,8 +350,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
     _LOGGER.info(
-        "%s successfully set up. Export path: %s",
+        "%s successfully set up. SFML entry: %s, database: %s, export path: %s",
         NAME,
+        sfml_entry.entry_id,
+        solar_db_path,
         validator.export_base_path
     )
 

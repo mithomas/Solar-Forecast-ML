@@ -19,8 +19,6 @@ import aiofiles
 from ..const import (
     EXPORT_DIRECTORIES,
     SFML_STATS_BASE,
-    SOLAR_FORECAST_ML_BASE,
-    SOLAR_FORECAST_DB,
     GRID_PRICE_MONITOR_BASE,
 )
 
@@ -33,10 +31,11 @@ _LOGGER = logging.getLogger(__name__)
 class DataValidator:
     """Validates and creates required directory structures. @zara"""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, solar_db_path: Path) -> None:
         """Initialize the data validator. @zara"""
         self._hass = hass
         self._config_path = Path(hass.config.path())
+        self._solar_db_path = solar_db_path
         self._initialized = False
         self._source_status: dict[str, bool] = {}
 
@@ -82,8 +81,8 @@ class DataValidator:
 
     async def _validate_sources(self) -> None:
         """Validate availability of source integrations. @zara"""
-        solar_base_path = self._config_path / SOLAR_FORECAST_ML_BASE
-        solar_db_path = self._config_path / SOLAR_FORECAST_DB
+        solar_base_path = self._solar_db_path.parent
+        solar_db_path = self._solar_db_path
 
         solar_base_exists = await self._hass.async_add_executor_job(solar_base_path.exists)
         solar_db_exists = await self._hass.async_add_executor_job(solar_db_path.exists)
@@ -167,7 +166,7 @@ class DataValidator:
             return None
 
         base_paths = {
-            "solar_forecast_ml": SOLAR_FORECAST_ML_BASE,
+            "solar_forecast_ml": self._solar_db_path.parent,
             "grid_price_monitor": GRID_PRICE_MONITOR_BASE,
         }
 

@@ -4,8 +4,12 @@
       "user": {
         "title": "Solar Forecast STATS - Welcome",
         "description": "Welcome to Solar Forecast STATS!\n\nThis integration tracks your solar production, battery, grid usage and calculates costs.\n\nClick NEXT to configure your sensors.",
-        "data": {},
-        "data_description": {}
+        "data": {
+          "sfml_config_entry_id": "Solar Forecast ML instance"
+        },
+        "data_description": {
+          "sfml_config_entry_id": "Select which Solar Forecast ML instance Solar Forecast STATS should read from"
+        }
       },
       "sensors_setup": {
         "title": "Main Sensors",
@@ -164,10 +168,12 @@
     },
     "abort": {
       "single_instance_allowed": "Solar Forecast STATS is already configured.",
+      "no_sfml_entries": "Configure Solar Forecast ML first.",
       "raspberry_pi_not_supported": "Installation on Raspberry Pi is not supported. The integration uses matplotlib for chart generation, which causes performance issues on Raspberry Pi. Please use a more powerful system.",
       "proxmox_not_recommended": "Installation on Proxmox VE host detected. Home Assistant should run in a VM or LXC container, not directly on the Proxmox host."
     },
     "error": {
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available.",
       "cannot_connect": "Connection failed",
       "unknown": "Unknown error"
     }
@@ -185,8 +191,19 @@
           "sensors_battery": "🔋 Battery Sensors (Optional)",
           "sensors_smartmeter": "📊 Smartmeter (Optional)",
           "consumers": "🏠 Consumers (Heat Pump, Heating Rod, Wallbox)",
+          "source": "☀️ Solar Forecast ML Source",
           "settings": "⚙️ Settings",
           "advanced": "🔧 Advanced"
+        }
+      },
+      "source": {
+        "title": "Solar Forecast ML Source",
+        "description": "Select which Solar Forecast ML instance Solar Forecast STATS should read from.",
+        "data": {
+          "sfml_config_entry_id": "Solar Forecast ML instance"
+        },
+        "data_description": {
+          "sfml_config_entry_id": "Changing the bound Solar Forecast ML source reloads Solar Forecast STATS."
         }
       },
       "sensors_main": {
@@ -434,7 +451,11 @@
       }
     },
     "error": {
+      "invalid_sfml_binding": "The selected Solar Forecast ML instance is not available.",
       "invalid_code": "Invalid access code!"
+    },
+    "abort": {
+      "no_sfml_entries": "Configure Solar Forecast ML first."
     }
   }
 }

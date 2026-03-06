@@ -14,9 +14,17 @@ from typing import TYPE_CHECKING
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 
 # Only import constants at module level - these are lightweight
-from .const import DOMAIN, NAME, PLATFORMS, VERSION
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
+from .const import (
+    CONF_SFML_CONFIG_ENTRY_ID,
+    DOMAIN,
+    NAME,
+    PLATFORMS,
+    VERSION,
+)
 
 if TYPE_CHECKING:
     from .coordinator import GridPriceMonitorCoordinator
@@ -37,6 +45,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         NAME,
         VERSION,
     )
+
+    sfml_entry_id = entry.data.get(CONF_SFML_CONFIG_ENTRY_ID)
+    sfml_entry = CoordinatorInitHelpers.get_config_entry(hass, sfml_entry_id)
+    if sfml_entry is None:
+        raise ConfigEntryError(
+            "Solar Forecast GPM requires a bound Solar Forecast ML instance; remove and re-add the entry."
+        )
 
     # Initialize domain data storage
     hass.data.setdefault(DOMAIN, {})

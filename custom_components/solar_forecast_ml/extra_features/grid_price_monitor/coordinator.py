@@ -18,6 +18,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
+from ...core.core_coordinator_init_helpers import CoordinatorInitHelpers
 from .const import (
     CONF_BATTERY_CAPACITY,
     CONF_BATTERY_POWER_SENSOR,
@@ -28,10 +29,10 @@ from .const import (
     CONF_MAX_SOC,
     CONF_MIN_SOC,
     CONF_PROVIDER_MARKUP,
+    CONF_SFML_CONFIG_ENTRY_ID,
     CONF_SMART_CHARGING_ENABLED,
     CONF_TAXES_FEES,
     CONF_VAT_RATE,
-    DB_PATH,
     DEFAULT_COUNTRY,
     DEFAULT_GRID_FEE,
     DEFAULT_MAX_PRICE,
@@ -70,6 +71,13 @@ class GridPriceMonitorCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._taxes_fees = entry.data.get(CONF_TAXES_FEES, DEFAULT_TAXES_FEES)
         self._provider_markup = entry.data.get(CONF_PROVIDER_MARKUP, DEFAULT_PROVIDER_MARKUP)
         self._max_price = entry.data.get(CONF_MAX_PRICE, DEFAULT_MAX_PRICE)
+        self._sfml_config_entry_id = entry.data[CONF_SFML_CONFIG_ENTRY_ID]
+        self._db_path = str(
+            CoordinatorInitHelpers.resolve_database_path(
+                hass,
+                self._sfml_config_entry_id,
+            )
+        )
 
         # Get VAT rate from config, fallback to country default
         default_vat = VAT_RATE_AT if self._country == "AT" else VAT_RATE_DE
@@ -162,7 +170,7 @@ class GridPriceMonitorCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         gpm_path = config_path / "grid_price_monitor"
 
         # Initialize database connector
-        self._db_connector = GPMDatabaseConnector(DB_PATH)
+        self._db_connector = GPMDatabaseConnector(self._db_path)
         await self._db_connector.connect()
 
         # Initialize data validator (for logs directory + legacy cleanup)
@@ -213,7 +221,11 @@ class GridPriceMonitorCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
 
         self._storage_initialized = True
-        _LOGGER.info("GPM storage initialized (database: %s)", DB_PATH)
+        _LOGGER.info(
+            "GPM storage initialized (SFML entry: %s, database: %s)",
+            self._sfml_config_entry_id,
+            self._db_path,
+        )
 
     async def async_shutdown_storage(self) -> None:
         """Shutdown storage components @zara"""

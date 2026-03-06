@@ -35,6 +35,7 @@ API_TIMEOUT = 30  # seconds
 # CONFIGURATION KEYS
 # ============================================================================
 CONF_COUNTRY = "country"
+CONF_SFML_CONFIG_ENTRY_ID = "sfml_config_entry_id"
 CONF_VAT_RATE = "vat_rate"
 CONF_GRID_FEE = "grid_fee"
 CONF_TAXES_FEES = "taxes_fees"
@@ -154,6 +155,3 @@ ATTR_LAST_UPDATE = "last_update"
 ATTR_DATA_SOURCE = "data_source"
 
 # ============================================================================
-# DATABASE
-# ============================================================================
-DB_PATH = "/config/solar_forecast_ml/solar_forecast.db"

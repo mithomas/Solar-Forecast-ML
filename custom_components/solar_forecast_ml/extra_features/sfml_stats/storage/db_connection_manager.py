@@ -14,15 +14,13 @@ import asyncio
 import logging
 import random
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import TYPE_CHECKING, AsyncIterator
 
 import aiosqlite
 
-from ..const import SOLAR_FORECAST_DB
-
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from pathlib import Path
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,21 +40,26 @@ class DatabaseConnectionManager:
     _instance: DatabaseConnectionManager | None = None
     _lock: asyncio.Lock = asyncio.Lock()
 
-    def __init__(self, config_path: Path) -> None:
+    def __init__(self, db_path: Path) -> None:
         """Initialize the database connection manager. @zara"""
-        self._config_path = config_path
-        self._db_path = config_path / SOLAR_FORECAST_DB
+        self._db_path = db_path
         self._connection: aiosqlite.Connection | None = None
         self._is_connected = False
 
     @classmethod
-    async def get_instance(cls, hass: HomeAssistant) -> DatabaseConnectionManager:
+    async def get_instance(
+        cls,
+        hass: HomeAssistant,
+        db_path: Path,
+    ) -> DatabaseConnectionManager:
         """Get or create the singleton instance. @zara"""
-        if cls._instance is None:
+        if cls._instance is None or cls._instance.db_path != db_path:
             async with cls._lock:
+                if cls._instance is not None and cls._instance.db_path != db_path:
+                    await cls._instance.close()
+                    cls._instance = None
                 if cls._instance is None:
-                    config_path = Path(hass.config.path())
-                    cls._instance = cls(config_path)
+                    cls._instance = cls(db_path)
                     await cls._instance.connect()
         return cls._instance
 

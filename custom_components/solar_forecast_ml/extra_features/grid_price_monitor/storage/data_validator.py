@@ -25,16 +25,6 @@ _LOGGER = logging.getLogger(__name__)
 # Directory structure
 LOGS_DIR_NAME = "logs"
 
-# Legacy JSON files to clean up
-LEGACY_DATA_DIR = "data"
-LEGACY_FILES = [
-    "price_cache.json",
-    "price_history.json",
-    "statistics.json",
-    "battery_stats.json",
-]
-LEGACY_CONFIG_BACKUP = "config_backup.json"
-
 
 class DataValidator:
     """Validates directory structure and manages config backup @zara"""
@@ -95,7 +85,6 @@ class DataValidator:
         """
         try:
             await self._run_in_executor(self._ensure_directories)
-            await self._async_cleanup_legacy_files()
 
             _LOGGER.info(
                 "Data structure validated successfully at %s",
@@ -118,42 +107,6 @@ class DataValidator:
             if not directory.exists():
                 directory.mkdir(parents=True, exist_ok=True)
                 _LOGGER.debug("Created directory: %s", directory)
-
-    async def _async_cleanup_legacy_files(self) -> None:
-        """Remove legacy JSON files after migration to database @zara"""
-
-        def _cleanup() -> None:
-            data_dir = self._base_path / LEGACY_DATA_DIR
-            removed = []
-
-            # Remove legacy data files
-            if data_dir.exists():
-                for filename in LEGACY_FILES:
-                    file_path = data_dir / filename
-                    if file_path.exists():
-                        file_path.unlink()
-                        removed.append(filename)
-
-                # Remove data directory if empty
-                try:
-                    data_dir.rmdir()
-                    removed.append(LEGACY_DATA_DIR + "/")
-                except OSError:
-                    pass  # Directory not empty (other files present)
-
-            # Remove legacy config backup
-            config_backup = self._base_path / LEGACY_CONFIG_BACKUP
-            if config_backup.exists():
-                config_backup.unlink()
-                removed.append(LEGACY_CONFIG_BACKUP)
-
-            if removed:
-                _LOGGER.info(
-                    "Migrated to database, removed legacy files: %s",
-                    ", ".join(removed),
-                )
-
-        await self._run_in_executor(_cleanup)
 
     async def async_backup_config(self, config_data: dict[str, Any]) -> bool:
         """Backup the current configuration to database @zara

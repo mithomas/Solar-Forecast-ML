@@ -225,6 +225,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Solar Forecast ML from a config entry. @zara"""
     from .coordinator import SolarForecastMLCoordinator
+    from .core.core_coordinator_init_helpers import CoordinatorInitHelpers
     from .core.core_dependency_handler import DependencyHandler
     from .services.service_notification import create_notification_service
 
@@ -251,7 +252,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.warning("NotificationService could not be created")
 
     # Setup data directory @zara
-    data_dir = Path(hass.config.path("solar_forecast_ml"))
+    data_dir = CoordinatorInitHelpers.setup_data_directory(hass, entry)
     flag_file = Path(hass.config.path(".storage/solar_forecast_ml_v16_installed"))
 
     try:
@@ -259,11 +260,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as e:
         _LOGGER.error(f"Failed to create data directory: {e}", exc_info=True)
 
-    # Initialize coordinator @zara
-    coordinator = SolarForecastMLCoordinator(hass, entry, dependencies_ok=dependencies_ok)
+    entry_token = CoordinatorInitHelpers.set_active_entry(entry)
+    try:
+        # Initialize coordinator @zara
+        coordinator = SolarForecastMLCoordinator(hass, entry, dependencies_ok=dependencies_ok)
 
-    # Run async setup (includes DataManager and DB initialization) @zara
-    setup_ok = await coordinator.async_setup()
+        # Run async setup (includes DataManager and DB initialization) @zara
+        setup_ok = await coordinator.async_setup()
+    finally:
+        CoordinatorInitHelpers.reset_active_entry(entry_token)
+
     if not setup_ok:
         _LOGGER.error("Failed to setup Solar Forecast coordinator")
         return False
