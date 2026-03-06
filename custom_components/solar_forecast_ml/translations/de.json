@@ -40,7 +40,7 @@
           "panel_groups_input": "Panel-Gruppen"
         },
         "data_description": {
-          "panel_groups_input": "Format: Leistung/Azimut/Neigung/Tages-kWh-Sensor - kommagetrennt oder untereinander"
+          "panel_groups_input": "Format: Name/Leistung/Azimut/Neigung[/Tages-kWh-Sensor] - kommagetrennt oder untereinander"
         }
       },
       "reconfigure_panel_groups": {
@@ -50,7 +50,7 @@
           "panel_groups_input": "Panel-Gruppen"
         },
         "data_description": {
-          "panel_groups_input": "Format: Leistung/Azimut/Neigung/Tages-kWh-Sensor - kommagetrennt oder untereinander"
+          "panel_groups_input": "Format: Name/Leistung/Azimut/Neigung[/Tages-kWh-Sensor] - kommagetrennt oder untereinander"
         }
       },
       "reconfigure": {
@@ -96,8 +96,8 @@
       "already_configured": "Wetter-Entität bereits in Verwendung",
       "sensor_not_found": "Sensor-Entität nicht gefunden",
       "invalid_sensor_state": "Sensor-Status ungültig oder nicht verfügbar",
-      "invalid_panel_format": "Ungültiges Format. Bitte verwenden Sie: Leistung/Azimut/Neigung (z.B. 1200/180/30)",
-      "panel_groups_required": "Mindestens 1 Panel-Gruppe erforderlich. Format: Leistung/Azimut/Neigung/Sensor (z.B. 5000/180/30/sensor.pv_today)",
+      "invalid_panel_format": "Ungültiges Format. Bitte verwenden Sie: Name/Leistung/Azimut/Neigung (z.B. Sued/1200/180/30)",
+      "panel_groups_required": "Mindestens 1 Panel-Gruppe erforderlich. Format: Name/Leistung/Azimut/Neigung[/Sensor] (z.B. Sued/5000/180/30/sensor.pv_today)",
       "too_many_panel_groups": "Maximal 4 Panel-Gruppen erlaubt",
       "energy_sensor_not_found": "Energie-Sensor nicht in Home Assistant gefunden. Bitte Entity-ID prüfen.",
       "energy_sensor_not_numeric": "Energie-Sensor Wert ist nicht numerisch. Bitte Sensor-Status prüfen."
