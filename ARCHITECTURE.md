@@ -59,8 +59,7 @@ Project Sarpeidon is a real-time warp core simulation engine that models antimat
 │  │  ├── Engineering Diagnostics (service_system_report.py)    │ │
 │  │  ├── Bridge Communication (service_notification.py)        │ │
 │  │  ├── Captain's Briefing (service_daily_briefing.py)        │ │
-│  │  ├── Red Alert Handler (service_error_handler.py)          │ │
-│  │  └── Auxiliary Modules (service_extra_features.py)         │ │
+│  │  └── Red Alert Handler (service_error_handler.py)          │ │
 │  └────────────────────────────────────────────────────────────┘ │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘

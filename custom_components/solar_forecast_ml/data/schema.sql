@@ -3341,33 +3341,6 @@ CREATE TABLE IF NOT EXISTS sensor_monthly_stats (
 CREATE INDEX IF NOT EXISTS idx_sensor_monthly_stats_year_month
     ON sensor_monthly_stats(year, month);
 
--- EAI owns only the following namespaced tables in the SFML database.
-CREATE TABLE IF NOT EXISTS eai_consumption_training_samples (
-    sample_key TEXT PRIMARY KEY,
-    entry_id TEXT NOT NULL,
-    target_date DATE NOT NULL,
-    target_hour INTEGER NOT NULL CHECK(target_hour >= 0 AND target_hour <= 23),
-    actual_kwh REAL NOT NULL CHECK(actual_kwh >= 0),
-    feature_snapshot TEXT NOT NULL,
-    accepted_at TEXT NOT NULL,
-    source TEXT NOT NULL,
-    excluded BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-CREATE INDEX IF NOT EXISTS idx_eai_consumption_training_samples_date_hour
-    ON eai_consumption_training_samples(entry_id, target_date, target_hour);
-
-CREATE TABLE IF NOT EXISTS eai_consumption_writer_state (
-    entry_id TEXT PRIMARY KEY,
-    baseline_kwh REAL NOT NULL CHECK(baseline_kwh >= 0),
-    baseline_observed_at_utc TEXT NOT NULL,
-    baseline_local_date DATE NOT NULL,
-    target_entity_id TEXT NOT NULL,
-    target_unit TEXT NOT NULL,
-    measurement_boundary_fingerprint TEXT NOT NULL,
-    updated_at_utc TEXT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS panel_group_config_epochs (
     epoch_id INTEGER PRIMARY KEY AUTOINCREMENT,
     topology_hash TEXT NOT NULL,
