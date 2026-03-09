@@ -64,10 +64,6 @@ Solar Forecast ML builds a **digital twin of your system** instead: solar physic
 
 It gets better with every day of data, because it learns from your installation rather than a reference one. And it tells you how good it currently is: accuracy, deviation, usable data days, long-term trends. No subscriptions, no telemetry, no cloud training.
 
-[![Solar Cockpit with live energy flow, weather and today's forecast](pictures/dashboard.png)](pictures/dashboard.png)
-
-<p align="center"><sub>Solar Cockpit from the optional Energy AI module: live energy flow between solar, home, battery and grid, with weather and today's forecast in one place.</sub></p>
-
 ---
 
 ## Is it right for you?
@@ -79,52 +75,6 @@ It gets better with every day of data, because it learns from your installation 
 **Not suitable for:** systems without a DC power reading, AC-coupled battery systems, or anyone looking for a one-click product.
 
 The website has the [full suitability check](https://solarforecastml.com/en/suitability/) for every component, including the effort each one takes.
-
----
-
-## What you see
-
-[![Today's forecast against measured production, hour by hour](pictures/forecast.png)](pictures/forecast.png)
-
-Forecast and measured production hour by hour, with weather context, learning basis and the hours that were excluded — and why.
-
-[![Panel-group production and reference comparison](pictures/solar.png)](pictures/solar.png)
-
-Every panel group stays visible on its own: who delivers as expected, who falls behind, how large the gap is — plus the shading pattern learned for your roof.
-
-[![Weekly and yearly overview of yield, forecast and forecast quality](pictures/intelligence.png)](pictures/intelligence.png)
-
-Week and year at a glance: yield against forecast, forecast quality, learning basis and the factors learned for each panel group. Model development stays auditable instead of being a promise.
-
-<br>
-
-<table>
-  <tr>
-    <td width="50%"><a href="pictures/energy_pricing.png"><img src="pictures/energy_pricing.png" alt="Energy balance and costs"></a></td>
-    <td width="50%"><a href="pictures/smart_charge.png"><img src="pictures/smart_charge.png" alt="Forecast-aware battery charging"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Energy &amp; finance</strong><br><sub>Where your energy comes from, what it costs, what you saved.</sub></td>
-    <td align="center"><strong>Smart charging</strong><br><sub>Grid charging planned from price, forecast and battery state.</sub></td>
-  </tr>
-</table>
-
-<p align="center"><sub>The views above come from the optional STATS module. SFML itself provides the forecast and its sensors to Home Assistant.</sub></p>
-
-### On your dashboard
-
-<table>
-  <tr>
-    <td width="50%"><a href="pictures/dashboard_cards.png"><img src="pictures/dashboard_cards.png" alt="Dashboard cards for solar forecast, energy flow and solar weather"></a></td>
-    <td width="50%"><a href="pictures/room_heating.png"><img src="pictures/room_heating.png" alt="Room heating with actual and target temperature per room"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Dashboard cards</strong><br><sub>Six ready-made cards for your Home Assistant dashboard. They follow your theme, light or dark, from desktop to phone.</sub></td>
-    <td align="center"><strong>Room heating</strong><br><sub>Every room by schedule, presence or both — with preheating, window detection, boost and holiday.</sub></td>
-  </tr>
-</table>
-
-<p align="center"><sub>Dashboard cards and room heating come with the optional STATS module; room heating is a premium feature. Both images show sample data.</sub></p>
 
 ---
 
@@ -140,39 +90,17 @@ Week and year at a glance: yield against forecast, forecast quality, learning ba
 | **Quality** | Stated | Measured, shown and traceable |
 | **Your data** | Sent to a service | Stays in your home |
 
-Two AI stacks carry the system: **Hubble** for the solar forecast, **Kepler** for energy decisions in the companion modules. Both run locally inside Home Assistant. If the methods behind a forecast disagree, solar physics takes over — so the result stays dependable even in unusual weather.
+The **Hubble** AI stack runs locally inside Home Assistant. If the methods behind a forecast disagree, solar physics takes over — so the result stays dependable even in unusual weather.
 
 ---
 
 ## Highlights
 
-Seven capabilities that make the difference in daily operation. Each one has a page of its own with screenshots and the reasoning behind it:
+The core forecasting capability has a page of its own with screenshots and the reasoning behind it:
 
 | | What it does for you |
 |---|---|
 | **[The forecast](https://solarforecastml.com/en/highlights/local-forecast/)** | Hourly for 72 hours, learned from your roof: shading, local weather, panel groups — and the forecast quality is measured, not claimed. |
-| **[Smart Charge](https://solarforecastml.com/en/highlights/smart-charge/)** | Charges the battery from the grid when electricity is cheap and the sun will not be enough — and leaves room for solar power otherwise. |
-| **[Hubble energy copilot](https://solarforecastml.com/en/highlights/hubble-copilot/)** | Reads your energy data and answers in plain sentences: what is worth doing today, how reliable the forecast is, whether the battery will last. |
-| **[Energy &amp; finance](https://solarforecastml.com/en/highlights/energy-finance/)** | Where your energy comes from, which device consumes it, what a kilowatt-hour really costs — and when the system has paid for itself. |
-| **[Kepler energy management](https://solarforecastml.com/en/highlights/kepler-ems/)** | House, heat pump, storage and car all want the sun. Kepler distributes it in a fixed order and explains every recommendation. |
-| **[Room heating](https://solarforecastml.com/en/highlights/room-heating/)** | Every room gets warm when it is needed — and only then. Kepler learns how fast each room heats up and preheats in time; Hubble starts and ends the heating season. |
-| **[Dashboard cards](https://solarforecastml.com/en/highlights/dashboard-cards/)** | Forecast, energy flow, weather, warnings, power price and heating as six cards for your Home Assistant dashboard — no YAML, matching your theme. |
-
-Smart Charge, Hubble, Energy &amp; finance, Kepler, room heating and the dashboard cards come with the companion modules below. The forecast is SFML itself.
-
----
-
-## Companion modules
-
-SFML works standalone. These build on top of it and are installed through the `install_extras` service:
-
-| Module | What it adds | Platform |
-|---|---|---|
-| **Solar Forecast STATS** | The complete energy workspace: live flows, forecast evaluation, weather history, energy balance, costs, battery and smart charging, room heating and six dashboard cards | x86_64 |
-| **Solar Forecast Energy AI** | Explainable recommendations for heat pump, storage and wallbox. Advisory only — it never switches a device | x86_64, ARM64 |
-| **Grid Price Monitor** | Dynamic electricity prices, time-of-use tariffs, real total price per kWh | all |
-
-Details and screenshots: [solarforecastml.com](https://solarforecastml.com/en/product/)
 
 ---
 
@@ -190,7 +118,7 @@ Details and screenshots: [solarforecastml.com](https://solarforecastml.com/en/pr
 
 During setup you provide the power sensor, orientation, tilt and capacity for each panel group, plus your total system capacity. Daily-reset energy helpers are not required — SFML derives hourly and daily energy from the configured power sensors and keeps its own validated state.
 
-The [installation guide](https://solarforecastml.com/en/installation/) walks through every step, including the optional modules.
+The [installation guide](https://solarforecastml.com/en/installation/) walks through every step.
 
 ---
 
