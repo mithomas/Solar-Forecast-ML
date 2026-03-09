@@ -428,37 +428,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     mode_str = "Hybrid-KI (Full Features)" if dependencies_ok else "Fallback Mode (Rule-Based)"
 
-    # Auto-sync extra features on update @zara
-    try:
-        from .services.service_extra_features import ExtraFeaturesInstaller
-
-        extra_installer = ExtraFeaturesInstaller(hass)
-        updated_features, _ = await extra_installer.sync_on_update()
-
-        if updated_features:
-            async def _send_update_notification():
-                await asyncio.sleep(2)
-                await hass.services.async_call(
-                    "persistent_notification",
-                    "create",
-                    {
-                        "title": "Extra Features Updated",
-                        "message": (
-                            f"The following extra features were updated:\n\n"
-                            f"**{', '.join(updated_features)}**\n\n"
-                            "Please **restart Home Assistant** to load the new versions."
-                        ),
-                        "notification_id": "solar_forecast_ml_extra_features_updated",
-                    },
-                )
-
-            hass.async_create_task(
-                _send_update_notification(),
-                name="solar_forecast_ml_update_notification"
-            )
-    except Exception as e:
-        _LOGGER.warning(f"Extra features sync failed: {e}")
-
     w = 61
     banner = [
         "╔" + "═" * w + "╗",
