@@ -37,11 +37,6 @@
   <a href="https://ko-fi.com/Q5Q41NMZZY" target="_blank"><img height="36" style="border:0px;height:36px;" src="https://ko-fi.com/img/githubbutton_sm.svg" border="0" alt="Buy Me a Coffee"></a>
 </p>
 
-<p align="center">
-  <strong>Own modern UI · Mobile-ready · Built-in dashboard cards</strong><br>
-  <sub>STATS brings a complete interface of its own — desktop and phone — plus six Home Assistant dashboard cards that follow your theme.</sub>
-</p>
-
 ---
 
 ## Not another solar forecast
@@ -69,8 +64,6 @@ Solar Forecast ML builds a **digital twin of your system** instead: solar physic
 
 It gets better with every day of data, because it learns from your installation rather than a reference one. And it tells you how good it currently is: accuracy, deviation, usable data days, long-term trends. No subscriptions, no telemetry, no cloud training.
 
-**SFML and STATS — who does what:** SFML is the integration. It learns, forecasts and publishes the forecast as Home Assistant sensors. **STATS** is the optional companion module with a **complete interface of its own** — not just Lovelace cards. The modern workspace covers cockpit, forecast evaluation, panel groups, energy and costs, smart charging and room heating, laid out for desktop and **optimised for phones and tablets**. Separately, STATS also ships **six ready-made Home Assistant dashboard cards** that follow your light or dark theme.
-
 ---
 
 ## Is it right for you?
@@ -82,26 +75,6 @@ It gets better with every day of data, because it learns from your installation 
 **Not suitable for:** systems without a DC power reading, AC-coupled battery systems, or anyone looking for a one-click product.
 
 The website has the [full suitability check](https://solarforecastml.com/en/suitability/) for every component, including the effort each one takes.
-
----
-
-## What you see
-
-STATS is a complete interface of its own — desktop and phone — with live energy flow, forecast quality, and Hubble explaining the day in plain language. Separately, it also ships six built-in Home Assistant dashboard cards that follow your theme.
-
-[![STATS Modern cockpit — live energy flow around the house](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/dashboard.png)](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/dashboard.png)
-
-<p align="center"><sub>STATS Modern cockpit: live energy flow between solar, home, battery and grid, with weather, forecast quality and today’s profile.</sub></p>
-
-[![Daily forecast vs actual with accuracy band and shade windows](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/forecast.png)](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/forecast.png)
-
-<p align="center"><sub>Forecast against measured production: accuracy band for the day, learned shade windows, and how reliable the forecast is right now.</sub></p>
-
-[![STATS Home with Hubble companion](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/home_hubble.png)](https://raw.githubusercontent.com/Zara-Toorox/Solar-Forecast-ML/main/pictures/home_hubble.png)
-
-<p align="center"><sub>Home view with Hubble: short balance, efficiency chain, and a companion tip for the evening — mobile-ready layout.</sub></p>
-
-<p align="center"><sub>All three screenshots are from the optional STATS module. SFML itself provides the forecast and its sensors to Home Assistant. Dashboard cards and room heating are additional STATS features (room heating is premium).</sub></p>
 
 ---
 
@@ -118,41 +91,17 @@ STATS is a complete interface of its own — desktop and phone — with live ene
 | **Quality** | Stated | Measured, shown and traceable |
 | **Your data** | Sent to a service | Stays in your home |
 
-Two local AI stacks carry the system: **Hubble** for the solar forecast and the energy companion that explains it, **Kepler** for energy decisions in the companion modules. Both run entirely inside Home Assistant. If the methods behind a forecast disagree, solar physics takes over — so the result stays dependable even in unusual weather.
+The **Hubble** AI stack runs locally inside Home Assistant. If the methods behind a forecast disagree, solar physics takes over — so the result stays dependable even in unusual weather.
 
 ---
 
 ## Highlights
 
-Seven capabilities that make the difference in daily operation. Each one has its own page with screenshots and the reasoning behind it:
+The core forecasting capability has a page of its own with screenshots and the reasoning behind it:
 
 | | What it does for you |
 |---|---|
-| **[The forecast](https://solarforecastml.com/en/highlights/local-forecast/)** | Hourly for 72 hours, learned from your roof: shading, local weather, panel groups — and forecast quality is measured, not claimed. |
-| **[Smart Charge](https://solarforecastml.com/en/highlights/smart-charge/)** | Charges the battery from the grid when electricity is cheap and the sun will not be enough — and leaves room for solar power otherwise. |
-| **[Hubble energy companion](https://solarforecastml.com/en/highlights/hubble-copilot/)** | Reads your energy data and answers in plain sentences: what is worth doing today, how accurate the forecast is right now, whether the battery will last the night. |
-| **[Energy &amp; finance](https://solarforecastml.com/en/highlights/energy-finance/)** | Where your energy comes from, which device consumes it, what a kilowatt-hour really costs — and when the system has paid for itself. |
-| **[Kepler energy management](https://solarforecastml.com/en/highlights/kepler-ems/)** | House, heat pump, storage and car all want the sun. Kepler distributes it in a fixed order and explains every recommendation. |
-| **[Room heating](https://solarforecastml.com/en/highlights/room-heating/)** | Every room gets warm when it is needed — and only then. Kepler learns how fast each room heats up and preheats in time; Hubble starts and ends the heating season. |
-| **[Dashboard cards](https://solarforecastml.com/en/highlights/dashboard-cards/)** | Six built-in cards for your Home Assistant dashboard — forecast, energy flow, weather, warnings, power price and heating. No YAML; they follow your theme on phone and desktop. |
-
-The forecast is SFML itself. Smart Charge, the Hubble companion, Energy &amp; finance, Kepler, room heating and the dashboard cards come with the companion modules below.
-
----
-
-## Companion modules
-
-SFML works standalone. These modules build on top of it and are installed through the `install_extras` service:
-
-| Module | What it adds | Platform |
-|---|---|---|
-| **Solar Forecast STATS** | Complete modern UI on top of the SFML sensors (desktop + mobile): live flows, forecast evaluation, weather history, energy balance, costs, battery and smart charging, room heating — plus six built-in Home Assistant dashboard cards | x86_64 |
-| **Solar Forecast Energy AI** | Explainable recommendations for heat pump, storage and wallbox, calculated locally by Kepler. Advisory only — it never switches a device | x86_64, ARM64 |
-| **Grid Price Monitor** | Dynamic electricity prices, time-of-use tariffs, real total price per kWh | all |
-
-SFML itself runs on x86_64, ARM and Raspberry Pi. STATS currently requires x86_64.
-
-Details and screenshots: [solarforecastml.com](https://solarforecastml.com/en/product/)
+| **[The forecast](https://solarforecastml.com/en/highlights/local-forecast/)** | Hourly for 72 hours, learned from your roof: shading, local weather, panel groups — and the forecast quality is measured, not claimed. |
 
 ---
 
@@ -170,7 +119,7 @@ Details and screenshots: [solarforecastml.com](https://solarforecastml.com/en/pr
 
 During setup you provide the power sensor, orientation, tilt and capacity for each panel group, plus your total system capacity. Daily-reset energy helpers are not required — SFML derives hourly and daily energy from the configured power sensors and keeps its own validated state.
 
-The [installation guide](https://solarforecastml.com/en/installation/) walks through every step, including the optional modules.
+The [installation guide](https://solarforecastml.com/en/installation/) walks through every step.
 
 ---
 
