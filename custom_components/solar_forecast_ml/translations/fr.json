@@ -118,6 +118,7 @@
           "update_interval": "Intervalle de mise a jour (s)",
           "diagnostic": "Mode diagnostic",
           "hourly": "Capteur prevision horaire",
+          "evcc_forecast": "evcc Prevision Solaire",
           "notify_startup": "Notification au demarrage",
           "notify_forecast": "Notifications de prevision",
           "notify_learning": "Notifications d'entrainement",
@@ -140,6 +141,7 @@
           "update_interval": "Intervalle de mise a jour des previsions (300-86400s, defaut : 3600)",
           "diagnostic": "Activer les capteurs de diagnostic pour la surveillance",
           "hourly": "Activer le capteur de prevision pour l'heure suivante",
+          "evcc_forecast": "Fournit un capteur avec des donnees de prevision horaire au format evcc. Permet l'integration directe dans evcc sans capteur template. Par defaut: DESACTIVE",
           "notify_startup": "Afficher une notification au demarrage",
           "notify_forecast": "Notifier lors des mises a jour de previsions",
           "notify_learning": "Notifier au debut de l'entrainement",
@@ -309,6 +311,9 @@
       },
       "next_hour_forecast": {
         "name": "Prevision heure suivante"
+      },
+      "evcc_forecast": {
+        "name": "evcc Prevision Solaire"
       },
       "peak_production_hour": {
         "name": "Meilleure heure"

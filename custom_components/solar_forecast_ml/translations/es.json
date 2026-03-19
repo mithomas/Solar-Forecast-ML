@@ -118,6 +118,7 @@
           "update_interval": "Intervalo de actualizacion (s)",
           "diagnostic": "Modo diagnostico",
           "hourly": "Sensor de prevision horaria",
+          "evcc_forecast": "evcc Solar Forecast",
           "notify_startup": "Notificacion de inicio",
           "notify_forecast": "Notificaciones de prevision",
           "notify_learning": "Notificaciones de entrenamiento",
@@ -140,6 +141,7 @@
           "update_interval": "Intervalo de actualizacion de previsiones (300-86400s, predeterminado: 3600)",
           "diagnostic": "Activar sensores de diagnostico para monitorizacion",
           "hourly": "Activar sensor de prevision para la proxima hora",
+          "evcc_forecast": "Proporciona un sensor con datos de prevision horaria en formato evcc. Permite la integracion directa en evcc sin sensores de plantilla. Por defecto: DESACTIVADO",
           "notify_startup": "Mostrar notificacion al inicio",
           "notify_forecast": "Notificar en actualizaciones de prevision",
           "notify_learning": "Notificar al inicio del entrenamiento",
@@ -309,6 +311,9 @@
       },
       "next_hour_forecast": {
         "name": "Prevision proxima hora"
+      },
+      "evcc_forecast": {
+        "name": "evcc Solar Forecast"
       },
       "peak_production_hour": {
         "name": "Mejor hora"
