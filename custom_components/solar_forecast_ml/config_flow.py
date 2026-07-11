@@ -32,6 +32,7 @@ from homeassistant.config_entries import (
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
+from homeassistant.util import slugify
 
 from .const import (
     CONF_ADAPTIVE_FORECAST_MODE,
@@ -59,6 +60,7 @@ from .const import (
     CONF_PANEL_GROUP_POWER_SENSOR,
     CONF_PANEL_GROUP_TILT,
     CONF_PANEL_GROUPS,
+    DEFAULT_PANEL_GROUP_NAME_PREFIX,
     CONF_PIRATE_WEATHER_API_KEY,
     CONF_PRESSURE_SENSOR,
     CONF_RAIN_SENSOR,
@@ -177,7 +179,9 @@ def _get_base_schema(defaults: dict | None, is_reconfigure: bool = False) -> vol
     )
 
 
-def _parse_panel_groups(panel_groups_str: str) -> list[dict]:
+def _parse_panel_groups(
+    panel_groups_str: str, name_prefix: str = DEFAULT_PANEL_GROUP_NAME_PREFIX
+) -> list[dict]:
     """Parse panel groups from string format to list of dicts. @zara
 
     Supported format:
@@ -210,7 +214,7 @@ def _parse_panel_groups(panel_groups_str: str) -> list[dict]:
                     continue
 
                 group_data = {
-                    CONF_PANEL_GROUP_NAME: f"Gruppe {idx + 1}",
+                    CONF_PANEL_GROUP_NAME: f"{name_prefix} {idx + 1}",
                     CONF_PANEL_GROUP_POWER: power_wp,
                     CONF_PANEL_GROUP_AZIMUTH: azimuth,
                     CONF_PANEL_GROUP_TILT: tilt,
@@ -279,7 +283,9 @@ def _panel_group_sensor_schema_key(index: int, sensor_key: str, sensor: str | No
     return vol.Optional(sensor_key)
 
 
-def _structured_panel_groups_schema(existing_groups: list[dict]) -> vol.Schema:
+def _structured_panel_groups_schema(
+    existing_groups: list[dict], name_prefix: str = DEFAULT_PANEL_GROUP_NAME_PREFIX
+) -> vol.Schema:
     fields = {}
     fields[
         vol.Optional(
@@ -297,15 +303,23 @@ def _structured_panel_groups_schema(existing_groups: list[dict]) -> vol.Schema:
 
     for index in range(1, PANEL_GROUP_MAX_COUNT + 1):
         group = _existing_panel_group(existing_groups, index)
+        name = str(
+            group.get(CONF_PANEL_GROUP_NAME) or f"{name_prefix} {index}"
+        ).strip()
         sensor = group.get(CONF_PANEL_GROUP_POWER_SENSOR)
         azimuth = group.get(CONF_PANEL_GROUP_AZIMUTH, DEFAULT_PANEL_AZIMUTH)
         power_wp = group.get(CONF_PANEL_GROUP_POWER)
         kwp_default = round(float(power_wp) / 1000.0, 3) if power_wp else None
 
+        name_key = _panel_group_field(index, "name")
         sensor_key = _panel_group_field(index, "sensor")
         azimuth_key = _panel_group_field(index, "azimuth")
         tilt_key = _panel_group_field(index, "tilt")
         kwp_key = _panel_group_field(index, "kwp")
+
+        fields[vol.Optional(name_key, default=name)] = selector.TextSelector(
+            selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
+        )
 
         sensor_schema_key = _panel_group_sensor_schema_key(index, sensor_key, sensor)
         fields[sensor_schema_key] = selector.EntitySelector(
@@ -392,6 +406,7 @@ def _resolve_panel_group_count(
 def _build_structured_panel_groups(
     user_input: dict[str, Any],
     existing_groups: list[dict],
+    name_prefix: str = DEFAULT_PANEL_GROUP_NAME_PREFIX,
 ) -> tuple[list[dict], dict[str, str]]:
     groups = []
     errors = {}
@@ -400,11 +415,24 @@ def _build_structured_panel_groups(
         errors[PANEL_GROUP_COUNT] = count_error
         return groups, errors
 
+    used_names: set[str] = set()
     for index in range(1, group_count + 1):
+        name_key = _panel_group_field(index, "name")
         sensor_key = _panel_group_field(index, "sensor")
         azimuth_key = _panel_group_field(index, "azimuth")
         tilt_key = _panel_group_field(index, "tilt")
         kwp_key = _panel_group_field(index, "kwp")
+
+        name = str(
+            user_input.get(name_key) or f"{name_prefix} {index}"
+        ).strip()
+        if not name:
+            name = f"{name_prefix} {index}"
+        name_key_normalized = slugify(name) or f"group_{index}"
+        if name_key_normalized in used_names:
+            errors[name_key] = "duplicate_panel_group_name"
+            continue
+        used_names.add(name_key_normalized)
 
         sensor = str(user_input.get(sensor_key) or "").strip()
         if not sensor:
@@ -440,7 +468,7 @@ def _build_structured_panel_groups(
             continue
 
         group_data = {
-            CONF_PANEL_GROUP_NAME: f"Gruppe {index}",
+            CONF_PANEL_GROUP_NAME: name,
             CONF_PANEL_GROUP_POWER: round(kwp * 1000.0, 3),
             CONF_PANEL_GROUP_AZIMUTH: azimuth,
             CONF_PANEL_GROUP_TILT: tilt,

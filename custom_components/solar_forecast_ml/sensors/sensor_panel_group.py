@@ -63,11 +63,21 @@ class PanelGroupForecastSensor(SensorEntity):
         },
     }
 
+    @classmethod
+    def unique_id_for(cls, entry_id: str, group_index: int, key: str) -> str:
+        return f"{entry_id}_{cls._KEY_CONFIG[key]['unique_id_prefix']}_group_{group_index}"
+
+    @classmethod
+    def entity_id_for(cls, group_name: str, key: str) -> str:
+        object_id = slugify(f"{cls._KEY_CONFIG[key]['unique_id_prefix']}_{group_name}")
+        return f"sensor.{object_id or cls._KEY_CONFIG[key]['unique_id_prefix']}"
+
     def __init__(
         self,
         coordinator: SolarForecastMLCoordinator,
         entry: ConfigEntry,
         group_name: str,
+        group_index: int,
         key: str,
     ) -> None:
         if key not in self._KEY_CONFIG:
@@ -82,11 +92,9 @@ class PanelGroupForecastSensor(SensorEntity):
         self._upcoming_hours: list[dict[str, Any]] = []
 
         key_config = self._KEY_CONFIG[key]
-        group_slug = slugify(group_name) or "panel_group"
         self._attr_name = f"{key_config['name']} {group_name}"
-        self._attr_unique_id = (
-            f"{entry.entry_id}_{key_config['unique_id_prefix']}_{group_slug}"
-        )
+        self._attr_unique_id = self.unique_id_for(entry.entry_id, group_index, key)
+        self.entity_id = self.entity_id_for(group_name, key)
         self._attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
         self._attr_state_class = SensorStateClass.TOTAL
         self._attr_device_class = SensorDeviceClass.ENERGY

@@ -33,9 +33,11 @@
         "title": "Configure Panel Groups (Required)",
         "description": "⚠️ REQUIRED: At least 1 panel group needed (max. 4)\n\nFormat: Power(Wp)/Azimuth(°)/Tilt(°)/Daily-kWh-Sensor\n\nExample south-facing:\n5000/180/30/sensor.pv_energy_today\n\nExample east-west:\n2500/90/15/sensor.pv_east_today, 2500/270/15/sensor.pv_west_today\n\nAzimuth: 0°=North, 90°=East, 180°=South, 270°=West\nTilt: 0°=horizontal, 90°=vertical\n\nDaily-kWh-Sensor: Home Assistant entity_id of a daily energy sensor for this group. The sensor should reset at midnight. The sensor part is optional in the input format, but strongly recommended for correct per-group learning.",
         "data": {
+          "group_1_name": "Group 1 Name",
           "panel_groups_input": "Panel Groups"
         },
         "data_description": {
+          "group_1_name": "Display name for panel group 1.",
           "panel_groups_input": "Format: Power/Azimuth/Tilt/Daily-kWh-Sensor - comma or newline separated"
         }
       },
@@ -43,9 +45,11 @@
         "title": "Reconfigure Panel Groups (Required)",
         "description": "⚠️ REQUIRED: At least 1 panel group needed (max. 4)\n\nFormat: Power(Wp)/Azimuth(°)/Tilt(°)/Daily-kWh-Sensor\n\nExample: 5000/180/30/sensor.pv_energy_today\nOr: 2500/90/15/sensor.pv_east, 2500/270/15/sensor.pv_west\n\nDaily-kWh-Sensor: Home Assistant entity_id of a daily energy sensor for this group. The sensor should reset at midnight. The sensor part is optional in the input format, but strongly recommended for correct per-group learning.",
         "data": {
+          "group_1_name": "Group 1 Name",
           "panel_groups_input": "Panel Groups"
         },
         "data_description": {
+          "group_1_name": "Display name for panel group 1.",
           "panel_groups_input": "Format: Power/Azimuth/Tilt/Daily-kWh-Sensor - comma or newline separated"
         }
       },

@@ -21,6 +21,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
+from ..const import DEFAULT_PANEL_GROUP_NAME_PREFIX
 from ..data.db_manager import DatabaseManager
 
 _LOGGER = logging.getLogger(__name__)
@@ -234,7 +235,9 @@ class AstronomyCache:
         total_kwh = 0.0
 
         for idx, group in enumerate(self._panel_groups):
-            group_name = group.get("name", f"Gruppe {idx + 1}")
+            group_name = group.get(
+                "name", f"{DEFAULT_PANEL_GROUP_NAME_PREFIX} {idx + 1}"
+            )
             power_wp = float(group.get("power_wp", 0))
             power_kwp = power_wp / 1000.0
             azimuth_deg = float(group.get("azimuth", 180))

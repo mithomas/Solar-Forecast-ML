@@ -34,6 +34,7 @@
         "description": "Zuerst die aktive Gruppenanzahl setzen. Nur Gruppen bis zu dieser Anzahl werden gespeichert; höhere Gruppen werden ignoriert. Sensor ist der Live-Leistungssensor der Gruppe (W oder kW). Azimut: 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Winkel ist die Modulneigung. kWp ist die installierte DC-Leistung der Gruppe.",
         "data": {
           "panel_group_count": "Aktive Panel-Gruppen",
+          "group_1_name": "Name der Gruppe 1",
           "group_1_sensor": "Gruppe 1 Sensor",
           "group_1_azimuth": "Gruppe 1 Azimut",
           "group_1_tilt": "Gruppe 1 Winkel",
@@ -53,6 +54,7 @@
         },
         "data_description": {
           "panel_group_count": "Anzahl der aktiven Panel-Gruppen. Zum Entfernen alter Gruppen diese Zahl reduzieren.",
+          "group_1_name": "Anzeigename für Panel-Gruppe 1.",
           "group_1_sensor": "Live-Leistungssensor für Gruppe 1. Einheit muss W oder kW sein.",
           "group_1_azimuth": "Ausrichtung der Module in Grad.",
           "group_1_tilt": "Neigungswinkel der Module in Grad.",
@@ -76,6 +78,7 @@
         "description": "Zuerst die aktive Gruppenanzahl setzen. Nur Gruppen bis zu dieser Anzahl werden gespeichert; höhere Gruppen werden entfernt. Sensor ist der Live-Leistungssensor der Gruppe (W oder kW). Azimut: 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Winkel ist die Modulneigung. kWp ist die installierte DC-Leistung der Gruppe.",
         "data": {
           "panel_group_count": "Aktive Panel-Gruppen",
+          "group_1_name": "Name der Gruppe 1",
           "group_1_sensor": "Gruppe 1 Sensor",
           "group_1_azimuth": "Gruppe 1 Azimut",
           "group_1_tilt": "Gruppe 1 Winkel",
@@ -95,6 +98,7 @@
         },
         "data_description": {
           "panel_group_count": "Anzahl der aktiven Panel-Gruppen. Um von 3 auf 2 Gruppen zu reduzieren, hier 2 eintragen.",
+          "group_1_name": "Anzeigename für Panel-Gruppe 1.",
           "group_1_sensor": "Live-Leistungssensor für Gruppe 1. Einheit muss W oder kW sein.",
           "group_1_azimuth": "Ausrichtung der Module in Grad.",
           "group_1_tilt": "Neigungswinkel der Module in Grad.",

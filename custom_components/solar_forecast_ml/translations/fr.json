@@ -33,9 +33,11 @@
         "title": "Configurer les groupes de panneaux (Obligatoire)",
         "description": "⚠️ OBLIGATOIRE : Au moins 1 groupe de panneaux requis (max. 4)\n\nFormat : Puissance(Wc)/Azimut(°)/Inclinaison(°)/Capteur-kWh-jour\n\nExemple orientation sud :\n5000/180/30/sensor.pv_energy_today\n\nExemple est-ouest :\n2500/90/15/sensor.pv_est_today, 2500/270/15/sensor.pv_ouest_today\n\nAzimut : 0°=Nord, 90°=Est, 180°=Sud, 270°=Ouest\nInclinaison : 0°=horizontal, 90°=vertical\n\nCapteur-kWh-jour : Obligatoire pour un apprentissage correct par groupe (doit se remettre a zero a minuit)",
         "data": {
+          "group_1_name": "Nom du groupe 1",
           "panel_groups_input": "Groupes de panneaux"
         },
         "data_description": {
+          "group_1_name": "Nom affiche du groupe de panneaux 1.",
           "panel_groups_input": "Format : Puissance/Azimut/Inclinaison/Capteur-kWh-jour - separes par virgules ou lignes"
         }
       },
@@ -43,9 +45,11 @@
         "title": "Reconfigurer les groupes de panneaux (Obligatoire)",
         "description": "⚠️ OBLIGATOIRE : Au moins 1 groupe de panneaux requis (max. 4)\n\nFormat : Puissance(Wc)/Azimut(°)/Inclinaison(°)/Capteur-kWh-jour\n\nExemple : 5000/180/30/sensor.pv_energy_today\nOu : 2500/90/15/sensor.pv_est, 2500/270/15/sensor.pv_ouest\n\nCapteur-kWh-jour : Obligatoire pour un apprentissage correct par groupe",
         "data": {
+          "group_1_name": "Nom du groupe 1",
           "panel_groups_input": "Groupes de panneaux"
         },
         "data_description": {
+          "group_1_name": "Nom affiche du groupe de panneaux 1.",
           "panel_groups_input": "Format : Puissance/Azimut/Inclinaison/Capteur-kWh-jour - separes par virgules ou lignes"
         }
       },

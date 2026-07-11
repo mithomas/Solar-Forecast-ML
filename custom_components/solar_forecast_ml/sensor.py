@@ -24,13 +24,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import slugify
 
 from .const import (
     CONF_DIAGNOSTIC,
     CONF_EVCC_FORECAST,
     CONF_HOURLY,
     CONF_PANEL_GROUPS,
+    DEFAULT_PANEL_GROUP_NAME_PREFIX,
     DOMAIN,
     VERSION,
 )
@@ -130,8 +130,15 @@ async def async_setup_entry(
         f"evcc Forecast={'Enabled' if enable_evcc else 'Disabled'}"
     )
 
+    await _reconcile_panel_group_entity_ids(hass, entry)
+
     # Clean up orphaned entities @zara
-    await _cleanup_orphaned_entities(hass, entry, diagnostic_mode_enabled, enable_evcc)
+    await _cleanup_orphaned_entities(
+        hass,
+        entry,
+        diagnostic_mode_enabled,
+        enable_evcc,
+    )
 
     # Create system status sensor and connect to coordinator @zara
     system_status_sensor = SystemStatusSensor(coordinator, entry.entry_id)
@@ -146,7 +153,14 @@ async def async_setup_entry(
 
     panel_group_sot_entities = []
     for idx, group in enumerate(getattr(coordinator, "panel_groups", []) or []):
-        group_name = str(group.get("name") or f"Group {idx + 1}") if isinstance(group, dict) else str(getattr(group, "name", None) or f"Group {idx + 1}")
+        group_name = (
+            str(group.get("name") or f"{DEFAULT_PANEL_GROUP_NAME_PREFIX} {idx + 1}")
+            if isinstance(group, dict)
+            else str(
+                getattr(group, "name", None)
+                or f"{DEFAULT_PANEL_GROUP_NAME_PREFIX} {idx + 1}"
+            )
+        )
         panel_group_sot_entities.extend(
             [
                 SFMLPanelGroupPowerSensor(actual_live_manager, entry, group_name, idx),
@@ -175,19 +189,31 @@ async def async_setup_entry(
     ]
     essential_production_entities.extend(panel_group_sot_entities)
 
-    for group in entry.data.get(CONF_PANEL_GROUPS, []):
-        group_name = group.get("name")
-        if not group_name:
-            continue
+    for group_index, group in enumerate(
+        entry.data.get(CONF_PANEL_GROUPS, []), start=1
+    ):
+        group_name = group.get("name") or f"{DEFAULT_PANEL_GROUP_NAME_PREFIX} {group_index}"
 
         essential_production_entities.extend(
             [
-                PanelGroupForecastSensor(coordinator, entry, group_name, "next_hour"),
-                PanelGroupForecastSensor(coordinator, entry, group_name, "today"),
-                PanelGroupForecastSensor(coordinator, entry, group_name, "remaining"),
-                PanelGroupForecastSensor(coordinator, entry, group_name, "tomorrow"),
                 PanelGroupForecastSensor(
-                    coordinator, entry, group_name, "day_after_tomorrow"
+                    coordinator, entry, group_name, group_index, "next_hour"
+                ),
+                PanelGroupForecastSensor(
+                    coordinator, entry, group_name, group_index, "today"
+                ),
+                PanelGroupForecastSensor(
+                    coordinator, entry, group_name, group_index, "remaining"
+                ),
+                PanelGroupForecastSensor(
+                    coordinator, entry, group_name, group_index, "tomorrow"
+                ),
+                PanelGroupForecastSensor(
+                    coordinator,
+                    entry,
+                    group_name,
+                    group_index,
+                    "day_after_tomorrow",
                 ),
             ]
         )
@@ -272,6 +298,43 @@ async def async_setup_entry(
     return True
 
 
+async def _reconcile_panel_group_entity_ids(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> None:
+    """Rename existing panel-group registry entries without recreating them."""
+    ent_reg = er.async_get(hass)
+
+    for group_index, group in enumerate(
+        entry.data.get(CONF_PANEL_GROUPS, []), start=1
+    ):
+        group_name = group.get("name") or f"{DEFAULT_PANEL_GROUP_NAME_PREFIX} {group_index}"
+        for key in PanelGroupForecastSensor._KEY_CONFIG:
+            unique_id = PanelGroupForecastSensor.unique_id_for(
+                entry.entry_id, group_index, key
+            )
+            desired_entity_id = PanelGroupForecastSensor.entity_id_for(group_name, key)
+            current_entity_id = ent_reg.async_get_entity_id(
+                "sensor", DOMAIN, unique_id
+            )
+
+            if not current_entity_id or current_entity_id == desired_entity_id:
+                continue
+
+            conflicting_entry = ent_reg.async_get(desired_entity_id)
+            if conflicting_entry and conflicting_entry.unique_id != unique_id:
+                _LOGGER.warning(
+                    "Cannot rename panel-group entity %s to %s: entity ID is occupied",
+                    current_entity_id,
+                    desired_entity_id,
+                )
+                continue
+
+            ent_reg.async_update_entity(
+                current_entity_id,
+                new_entity_id=desired_entity_id,
+            )
+
+
 async def _cleanup_orphaned_entities(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -314,10 +377,11 @@ async def _cleanup_orphaned_entities(
     ]
 
     panel_group_unique_ids = {
-        f"{entry.entry_id}_{config['unique_id_prefix']}_{slugify(group.get('name')) or 'panel_group'}"
-        for group in entry.data.get(CONF_PANEL_GROUPS, [])
-        if group.get("name")
-        for config in PanelGroupForecastSensor._KEY_CONFIG.values()
+        PanelGroupForecastSensor.unique_id_for(entry.entry_id, group_index, key)
+        for group_index, group in enumerate(
+            entry.data.get(CONF_PANEL_GROUPS, []), start=1
+        )
+        for key in PanelGroupForecastSensor._KEY_CONFIG
     }
 
     entities_removed = 0
