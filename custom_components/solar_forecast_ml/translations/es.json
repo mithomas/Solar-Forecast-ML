@@ -33,9 +33,17 @@
         "title": "Configurar grupos de paneles (Obligatorio)",
         "description": "⚠️ OBLIGATORIO: Se requiere al menos 1 grupo de paneles (max. 4)\n\nFormato: Potencia(Wp)/Azimut(°)/Inclinacion(°)/Sensor-kWh-diario\n\nEjemplo orientacion sur:\n5000/180/30/sensor.pv_energy_today\n\nEjemplo este-oeste:\n2500/90/15/sensor.pv_este_today, 2500/270/15/sensor.pv_oeste_today\n\nAzimut: 0°=Norte, 90°=Este, 180°=Sur, 270°=Oeste\nInclinacion: 0°=horizontal, 90°=vertical\n\nSensor-kWh-diario: Obligatorio para un aprendizaje correcto por grupo (debe reiniciarse a medianoche)",
         "data": {
+          "group_1_name": "Nombre del grupo 1",
+          "group_2_name": "Nombre del grupo 2",
+          "group_3_name": "Nombre del grupo 3",
+          "group_4_name": "Nombre del grupo 4",
           "panel_groups_input": "Grupos de paneles"
         },
         "data_description": {
+          "group_1_name": "Nombre mostrado para el grupo de paneles 1.",
+          "group_2_name": "Nombre mostrado para el grupo de paneles 2.",
+          "group_3_name": "Nombre mostrado para el grupo de paneles 3.",
+          "group_4_name": "Nombre mostrado para el grupo de paneles 4.",
           "panel_groups_input": "Formato: Potencia/Azimut/Inclinacion/Sensor-kWh-diario - separados por comas o lineas"
         }
       },
@@ -43,9 +51,17 @@
         "title": "Reconfigurar grupos de paneles (Obligatorio)",
         "description": "⚠️ OBLIGATORIO: Se requiere al menos 1 grupo de paneles (max. 4)\n\nFormato: Potencia(Wp)/Azimut(°)/Inclinacion(°)/Sensor-kWh-diario\n\nEjemplo: 5000/180/30/sensor.pv_energy_today\nO: 2500/90/15/sensor.pv_este, 2500/270/15/sensor.pv_oeste\n\nSensor-kWh-diario: Obligatorio para un aprendizaje correcto por grupo",
         "data": {
+          "group_1_name": "Nombre del grupo 1",
+          "group_2_name": "Nombre del grupo 2",
+          "group_3_name": "Nombre del grupo 3",
+          "group_4_name": "Nombre del grupo 4",
           "panel_groups_input": "Grupos de paneles"
         },
         "data_description": {
+          "group_1_name": "Nombre mostrado para el grupo de paneles 1.",
+          "group_2_name": "Nombre mostrado para el grupo de paneles 2.",
+          "group_3_name": "Nombre mostrado para el grupo de paneles 3.",
+          "group_4_name": "Nombre mostrado para el grupo de paneles 4.",
           "panel_groups_input": "Formato: Potencia/Azimut/Inclinacion/Sensor-kWh-diario - separados por comas o lineas"
         }
       },
@@ -95,7 +111,8 @@
       "energy_sensor_not_numeric": "El valor del sensor de energia no es numerico. Verifique el estado del sensor.",
       "energy_sensor_not_kwh": "El sensor del grupo de paneles no se acepta. Use un sensor acumulativo de energia DC con unidad kWh.",
       "energy_sensor_not_dc_energy": "El sensor del grupo de paneles no se acepta. Se espera device_class=energy.",
-      "energy_sensor_not_cumulative": "El sensor del grupo de paneles no se acepta. Se espera state_class=total o total_increasing."
+      "energy_sensor_not_cumulative": "El sensor del grupo de paneles no se acepta. Se espera state_class=total o total_increasing.",
+      "duplicate_panel_group_name": "Los nombres de los grupos de paneles deben ser únicos."
     },
     "abort": {
       "already_configured": "Integracion ya configurada",

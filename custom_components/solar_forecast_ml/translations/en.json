@@ -33,9 +33,17 @@
         "title": "Configure Panel Groups (Required)",
         "description": "⚠️ REQUIRED: At least 1 panel group needed (max. 4)\n\nFormat: Power(Wp)/Azimuth(°)/Tilt(°)/Daily-kWh-Sensor\n\nExample south-facing:\n5000/180/30/sensor.pv_energy_today\n\nExample east-west:\n2500/90/15/sensor.pv_east_today, 2500/270/15/sensor.pv_west_today\n\nAzimuth: 0°=North, 90°=East, 180°=South, 270°=West\nTilt: 0°=horizontal, 90°=vertical\n\nDaily-kWh-Sensor: Home Assistant entity_id of a daily energy sensor for this group. The sensor should reset at midnight. The sensor part is optional in the input format, but strongly recommended for correct per-group learning.",
         "data": {
+          "group_1_name": "Group 1 Name",
+          "group_2_name": "Group 2 Name",
+          "group_3_name": "Group 3 Name",
+          "group_4_name": "Group 4 Name",
           "panel_groups_input": "Panel Groups"
         },
         "data_description": {
+          "group_1_name": "Display name for panel group 1.",
+          "group_2_name": "Display name for panel group 2.",
+          "group_3_name": "Display name for panel group 3.",
+          "group_4_name": "Display name for panel group 4.",
           "panel_groups_input": "Format: Power/Azimuth/Tilt/Daily-kWh-Sensor - comma or newline separated"
         }
       },
@@ -43,9 +51,17 @@
         "title": "Reconfigure Panel Groups (Required)",
         "description": "⚠️ REQUIRED: At least 1 panel group needed (max. 4)\n\nFormat: Power(Wp)/Azimuth(°)/Tilt(°)/Daily-kWh-Sensor\n\nExample: 5000/180/30/sensor.pv_energy_today\nOr: 2500/90/15/sensor.pv_east, 2500/270/15/sensor.pv_west\n\nDaily-kWh-Sensor: Home Assistant entity_id of a daily energy sensor for this group. The sensor should reset at midnight. The sensor part is optional in the input format, but strongly recommended for correct per-group learning.",
         "data": {
+          "group_1_name": "Group 1 Name",
+          "group_2_name": "Group 2 Name",
+          "group_3_name": "Group 3 Name",
+          "group_4_name": "Group 4 Name",
           "panel_groups_input": "Panel Groups"
         },
         "data_description": {
+          "group_1_name": "Display name for panel group 1.",
+          "group_2_name": "Display name for panel group 2.",
+          "group_3_name": "Display name for panel group 3.",
+          "group_4_name": "Display name for panel group 4.",
           "panel_groups_input": "Format: Power/Azimuth/Tilt/Daily-kWh-Sensor - comma or newline separated"
         }
       },
@@ -95,7 +111,8 @@
       "energy_sensor_not_numeric": "Energy sensor value is not numeric. Check sensor state.",
       "energy_sensor_not_kwh": "Panel group sensor is not accepted. Use a cumulative DC energy sensor with unit kWh.",
       "energy_sensor_not_dc_energy": "Panel group sensor is not accepted. Expected device_class=energy.",
-      "energy_sensor_not_cumulative": "Panel group sensor is not accepted. Expected state_class=total or total_increasing."
+      "energy_sensor_not_cumulative": "Panel group sensor is not accepted. Expected state_class=total or total_increasing.",
+      "duplicate_panel_group_name": "Panel group names must be unique."
     },
     "abort": {
       "already_configured": "Integration already configured",

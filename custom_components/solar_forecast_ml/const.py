@@ -45,6 +45,7 @@ CONF_PANEL_GROUP_AZIMUTH = "azimuth"
 CONF_PANEL_GROUP_TILT = "tilt"
 CONF_PANEL_GROUP_NAME = "name"
 CONF_PANEL_GROUP_POWER_SENSOR = "power_sensor"
+DEFAULT_PANEL_GROUP_NAME_PREFIX = "Group"
 
 # Plasma Injector Clipping @starfleet-engineering
 CONF_INVERTER_MAX_POWER = "inverter_max_power"
